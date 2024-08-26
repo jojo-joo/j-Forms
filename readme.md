@@ -30,4 +30,5 @@ To provide embedded engineers with a solution that is tidy, fast, simple, and ro
 3. **Builtin Style Support:** Support for VUE, MATERIAL, and BOOTSTRAP styles.
 4. **Automatic Code Generation:** Definition of data formats, with automatic generation of front-end, protocol, and back-end code.
 
-##  
+##  log
+jsonform-2.2.5: orginal version, 3,284,244 bytes
