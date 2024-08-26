@@ -31,4 +31,5 @@ To provide embedded engineers with a solution that is tidy, fast, simple, and ro
 4. **Automatic Code Generation:** Definition of data formats, with automatic generation of front-end, protocol, and back-end code.
 
 ##  log
-jsonform-2.2.5: orginal version, 3,284,244 bytes
+orginal version, 3,284,244 bytes
+replace jquery to zepto, remove unessesary files, 596,501 bytes
