@@ -8,7 +8,7 @@
 ### Modern web technology
 - [pure-css](https://github.com/pure-css/pure/) A set of small, responsive CSS modules that you can use in every web project.
 - [jsonform](https://github.com/jsonform/jsonform) The JSON Form library is a JavaScript client-side library that takes a structured data model defined using JSON Schema as input and returns a Bootstrap 3-friendly HTML form that matches the schema.
-- [zepto](https://zeptojs.com/) Zepto is a minimalist JavaScript library for modern browsers with a largely jQuery-compatible API. If you use jQuery, you already know how to use Zepto.
+- [zepto](https://github.com/madrobby/zepto) Zepto is a minimalist JavaScript library for modern browsers with a largely jQuery-compatible API. If you use jQuery, you already know how to use Zepto.
 ### Performance
 - the whole footprint (including css/html/javascript/schema/server) size is should not greater than 100kB which is suitable for most modern mcu flash size.
 - all the web files are packed into one single html file to improve the network performance
@@ -33,3 +33,4 @@ To provide embedded engineers with a solution that is tidy, fast, simple, and ro
 ##  log
 orginal version, 3,284,244 bytes
 replace jquery to zepto, remove unessesary files, 596,501 bytes
+remove jsonform-split, jsonform-defaults, jsv.js, 363,576 bytes
