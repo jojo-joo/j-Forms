@@ -388,7 +388,7 @@
       'template': ''
     },
     'root': {
-      'template': '<div><%= children %></div>'
+      'template': '<div class="pure-form pure-form-stacked"><%= children %></div>'
     },
     'text': inputFieldTemplate('text'),
     'password': inputFieldTemplate('password'),
