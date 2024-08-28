@@ -34,3 +34,11 @@ To provide embedded engineers with a solution that is tidy, fast, simple, and ro
 orginal version, 3,284,244 bytes
 replace jquery to zepto, remove unessesary files, 596,501 bytes
 remove jsonform-split, jsonform-defaults, jsv.js, 363,576 bytes
+jsonform-2.2.5.04: 156,349 bytes
+- replace underscore to es6. 
+- ace removed. 
+- wysihtml5 removed
+- file-hosted-public removed
+- file-transloadit removed
+- imageselect removed
+- iconselect removed

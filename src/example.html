@@ -3,50 +3,52 @@
 <head>
   <meta charset="utf-8" />
   <title>Getting started with JSON Form</title>
-  <link rel="stylesheet" type="text/css" href="bootstrap.css" />
+  <!-- <link rel="stylesheet" type="text/css" href="bootstrap.css" /> -->
 </head>
 <body>
   <h1>Getting started with JSON Form</h1>
   <form></form>
   <div id="res" class="alert"></div>
   <script type="text/javascript" src="zepto.min.js"></script>
-  <script type="text/javascript" src="underscore.js"></script>
+  <!-- <script type="text/javascript" src="underscore.js"></script> -->
   <script type="text/javascript" src="jsonform.js"></script>
   <script type="text/javascript">
     $('form').jsonForm({
       schema: {
-    "message": {
-      "type": "string",
-      "title": "Message"
-    },
-    "author": {
-      "type": "object",
-      "title": "Author",
-      "properties": {
-        "name": {
-          "type": "password",
-          "title": "Name"
+        "text1": { "type": "text" },
+        "password": { "type": "password" },
+        'date': { "type": 'date' },
+        'datetime': { "type": 'datetime' },
+        'datetime-local': { "type": 'datetime-local' },
+        'email': { "type": 'email' },
+        'month': { "type": 'month' },
+        'number': { "type": 'number' },
+        'search': { "type": 'search' },
+        'tel': { "type": 'tel' },
+        'time': { "type": 'time' },
+        'url': { "type": 'url' },
+        'week': { "type": 'week' },
+        "range": {
+          "type": "range",
+          "title": "Is JSON Form useful?",
+          "description": "The field should appear as a range that accepts values between 0 (excluded) and 200 by steps of 20 on browsers that support the \"range\" input type.<br/>Note that the \"step\" constraint is not enforced when the form is submitted.",
+          "default": 40,
+          "minimum": 0,
+          "exclusiveMinimum": true,
+          "maximum": 200
+        },
+        "checkbox": {
+          "type": "boolean"
         },
         "gender": {
           "type": "string",
           "title": "Gender",
-          "enum": [ "male", "female", "alien" ]
+          "enum": ["male", "female", "alien"]
         },
-        "magic": {
-          "type": "integer",
-          "title": "Magic number",
-          "default": 42
-        }
-      }
-    }
-  },
-      onSubmit: function (errors, values) {
-        if (errors) {
-          $('#res').html('<p>I beg your pardon?</p>');
-        } else {
-          $('#res').html('<p>Hello ' + values.name + '.' +
-            (values.age ? '<br/>You are ' + values.age + '.' : '') +
-            '</p>');
+        "language": {
+          "type": "radios",
+          "title": "Best language",
+          "enum": ["JavaScript", "Python", "PHP", "Java", "C++", "other"]
         }
       }
     });
