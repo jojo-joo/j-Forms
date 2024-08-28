@@ -22,13 +22,7 @@
  * dynamic by essence.
  */
 
-/*global window*/
-
-(function (serverside, global, $, _, JSON) {
-  if (serverside && !_) {
-    _ = require('underscore');
-  }
-
+(function ($, _) {
   /**
    * Regular expressions used to extract array indexes in input field names
    */
@@ -3242,8 +3236,8 @@
     if (options.validate !== false) {
       var validator = false;
       if (typeof options.validate != "object") {
-        if (global.JSONFormValidator) {
-          validator = global.JSONFormValidator.createEnvironment("json-schema-draft-03");
+        if (window.JSONFormValidator) {
+          validator = window.JSONFormValidator.createEnvironment("json-schema-draft-03");
         }
       } else {
         validator = options.validate;
@@ -3516,18 +3510,15 @@
     return jsonform.getFormValue(this);
   };
 
-  // Expose the getFormValue method to the global object
+  // Expose the getFormValue method to the window object
   // (other methods exposed as jQuery functions)
-  global.JSONForm = global.JSONForm || { util: {} };
-  global.JSONForm.getFormValue = jsonform.getFormValue;
-  global.JSONForm.fieldTemplate = jsonform.fieldTemplate;
-  global.JSONForm.fieldTypes = jsonform.elementTypes;
-  global.JSONForm.getInitialValue = getInitialValue;
-  global.JSONForm.util.getObjKey = jsonform.util.getObjKey;
-  global.JSONForm.util.setObjKey = jsonform.util.setObjKey;
+  window.JSONForm = window.JSONForm || { util: {} };
+  window.JSONForm.getFormValue = jsonform.getFormValue;
+  window.JSONForm.fieldTemplate = jsonform.fieldTemplate;
+  window.JSONForm.fieldTypes = jsonform.elementTypes;
+  window.JSONForm.getInitialValue = getInitialValue;
+  window.JSONForm.util.getObjKey = jsonform.util.getObjKey;
+  window.JSONForm.util.setObjKey = jsonform.util.setObjKey;
 
-})((typeof exports !== 'undefined'),
-  ((typeof exports !== 'undefined') ? exports : window),
-  ((typeof Zepto !== 'undefined') ? Zepto : { fn: {} }),
-  ((typeof _ !== 'undefined') ? _ : null),
-  JSON);
+})(((typeof Zepto !== 'undefined') ? Zepto : { fn: {} }),
+  ((typeof _ !== 'undefined') ? _ : null));
