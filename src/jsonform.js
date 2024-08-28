@@ -318,7 +318,7 @@
       '<% for(var key in elt.htmlMetaData) {%>' +
       '<%= key %>="<%= elt.htmlMetaData[key] %>" ' +
       '<% }%>' +
-      'class="form-group jsonform-error-<%= keydash %>' +
+      'class="pure-control-group jsonform-error-<%= keydash %>' +
       '<%= elt.htmlClass ? " " + elt.htmlClass : "" %>' +
       '<%= (node.schemaElement && node.schemaElement.required && (node.schemaElement.type !== "boolean") ? " jsonform-required" : "") %>' +
       '<%= (node.readOnly ? " jsonform-readonly" : "") %>' +
@@ -327,7 +327,6 @@
       '<% if (!elt.notitle) { %>' +
       '<label for="<%= node.id %>"><%= node.title ? node.title : node.name %></label>' +
       '<% } %>' +
-      '<div class="controls">' +
       '<% if (node.prepend || node.append) { %>' +
       '<div class="<% if (node.prepend) { %>input-group<% } %>' +
       '<% if (node.append) { %> input-group<% } %>">' +
@@ -346,9 +345,9 @@
       '<span class="help-block"><%= node.description %></span>' +
       '<% } %>' +
       '<span class="help-block jsonform-errortext" style="display:none;"></span>' +
-      '</div></div>';
+      '</div>';
   };
-  
+
   var inputFieldTemplate = function (type) {
     return {
       'template': '<input type="' + type + '" ' +
@@ -364,7 +363,12 @@
         '<%= (node.placeholder? " placeholder=" + \'"\' + escape(node.placeholder) + \'"\' : "")%>' +
         ' />',
       'fieldtemplate': true,
-      'inputfield': true
+      'inputfield': true,
+      'childTemplate': function (inner) {
+        return '<div class="pure-control-group">' +
+          inner +
+          '</div>';
+      }
     }
   };
 
@@ -373,7 +377,7 @@
       'template': ''
     },
     'root': {
-      'template': '<div class="pure-form pure-form-stacked"><%= children %></div>'
+      'template': '<div class="pure-form pure-form-aligned"><%= children %></div>',
     },
     'text': inputFieldTemplate('text'),
     'password': inputFieldTemplate('password'),
@@ -885,11 +889,11 @@
       'template': '<%= elt.msg %>'
     },
     'fieldset': {
-      'template': '<fieldset class="form-group jsonform-error-<%= keydash %> <% if (elt.expandable) { %>expandable<% } %> <%= elt.htmlClass?elt.htmlClass:"" %>" ' +
+      'template': '<fieldset class="pure-control-group jsonform-error-<%= keydash %> <% if (elt.expandable) { %>expandable<% } %> <%= elt.htmlClass?elt.htmlClass:"" %>" ' +
         '<% if (id) { %> id="<%= id %>"<% } %>' +
         '>' +
         '<% if (node.title || node.legend) { %><legend role="treeitem" aria-expanded="false"><%= node.title || node.legend %></legend><% } %>' +
-        '<% if (elt.expandable) { %><div class="form-group"><% } %>' +
+        '<% if (elt.expandable) { %><div class="pure-control-group"><% } %>' +
         '<%= children %>' +
         '<% if (elt.expandable) { %></div><% } %>' +
         '</fieldset>',
@@ -906,7 +910,7 @@
         '<% if (id) { %> id="<%= id %>"<% } %>' +
         ' class="expandable <%= elt.htmlClass?elt.htmlClass:"" %>">' +
         '<legend role="treeitem" aria-expanded="false"><%= (node.title || node.legend) ? (node.title || node.legend) : "Advanced options" %></legend>' +
-        '<div class="form-group">' +
+        '<div class="pure-control-group">' +
         '<%= children %>' +
         '</div>' +
         '</fieldset>',
@@ -923,7 +927,7 @@
         '<% if (id) { %> id="<%= id %>"<% } %>' +
         ' class="expandable <%= elt.htmlClass?elt.htmlClass:"" %>">' +
         '<legend role="treeitem" aria-expanded="false"><%= (node.title || node.legend) ? (node.title || node.legend) : "Authentication settings" %></legend>' +
-        '<div class="form-group">' +
+        '<div class="pure-control-group">' +
         '<%= children %>' +
         '</div>' +
         '</fieldset>',
@@ -998,7 +1002,7 @@
         '<% if (node.formElement.key) { %><input type="hidden" id="<%= node.id %>" name="<%= node.name %>" value="<%= escape(value) %>" /><% } else { %>' +
         '<a id="<%= node.id %>"></a><% } %>' +
         '<div class="tabbable">' +
-        '<div class="form-group<%= node.formElement.hideMenu ? " hide" : "" %>">' +
+        '<div class="pure-control-group<%= node.formElement.hideMenu ? " hide" : "" %>">' +
         '<% if (!elt.notitle) { %><label for="<%= node.id %>"><%= node.title ? node.title : node.name %></label><% } %>' +
         '<div class="controls"><%= tabs %></div>' +
         '</div>' +
