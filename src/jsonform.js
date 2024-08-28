@@ -348,16 +348,7 @@
       '<span class="help-block jsonform-errortext" style="display:none;"></span>' +
       '</div></div>';
   };
-
-  var fileDisplayTemplate = '<div class="_jsonform-preview">' +
-    '<% if (value.type=="image") { %>' +
-    '<img class="jsonform-preview" id="jsonformpreview-<%= id %>" src="<%= value.url %>" />' +
-    '<% } else { %>' +
-    '<a href="<%= value.url %>"><%= value.name %></a> (<%= Math.ceil(value.size/1024) %>kB)' +
-    '<% } %>' +
-    '</div>' +
-    '<a href="#" class="btn btn-default _jsonform-delete"><i class="glyphicon glyphicon-remove" title="Remove"></i></a> ';
-
+  
   var inputFieldTemplate = function (type) {
     return {
       'template': '<input type="' + type + '" ' +
@@ -3420,7 +3411,7 @@
     }
   };
 
-
+ 
   /**
    * Generates the HTML form from the given JSON Form object and renders the form.
    *
