@@ -62,7 +62,7 @@
     return Object.assign({}, value);
   };
 
-  const escape = (value) => {
+  const escape = (str) => {
     return str.replace(/&/g, '&amp;')
               .replace(/</g, '&lt;')
               .replace(/>/g, '&gt;')
@@ -75,12 +75,8 @@
     var _ = {};
 
     this.templateSettings = {
-        // 求值
         evaluate: /<%([\s\S]+?)%>/g,
-        // 插入
-        interpolate: /<%=([\s\S]+?)%>/g,
-        // 转义
-        escape: /<%-([\s\S]+?)%>/g
+        interpolate: /<%=([\s\S]+?)%>/g
     };
     
     var noMatch = /(.)^/;
@@ -312,56 +308,45 @@
   };
 
 
-  // Twitter bootstrap-friendly HTML boilerplate for standard inputs
-  jsonform.fieldTemplate = function (inner) {
-    return '<div ' +
-      '<% for(var key in elt.htmlMetaData) {%>' +
-      '<%= key %>="<%= elt.htmlMetaData[key] %>" ' +
-      '<% }%>' +
-      'class="pure-control-group jsonform-error-<%= keydash %>' +
-      '<%= elt.htmlClass ? " " + elt.htmlClass : "" %>' +
-      '<%= (node.schemaElement && node.schemaElement.required && (node.schemaElement.type !== "boolean") ? " jsonform-required" : "") %>' +
-      '<%= (node.readOnly ? " jsonform-readonly" : "") %>' +
-      '<%= (node.disabled ? " jsonform-disabled" : "") %>' +
-      '">' +
-      '<% if (!elt.notitle) { %>' +
-      '<label for="<%= node.id %>"><%= node.title ? node.title : node.name %></label>' +
-      '<% } %>' +
-      '<% if (node.prepend || node.append) { %>' +
-      '<div class="<% if (node.prepend) { %>input-group<% } %>' +
-      '<% if (node.append) { %> input-group<% } %>">' +
-      '<% if (node.prepend) { %>' +
-      '<span class="input-group-addon"><%= node.prepend %></span>' +
-      '<% } %>' +
-      '<% } %>' +
-      inner +
-      '<% if (node.append) { %>' +
-      '<span class="input-group-addon"><%= node.append %></span>' +
-      '<% } %>' +
-      '<% if (node.prepend || node.append) { %>' +
-      '</div>' +
-      '<% } %>' +
-      '<% if (node.description) { %>' +
-      '<span class="help-block"><%= node.description %></span>' +
-      '<% } %>' +
-      '<span class="help-block jsonform-errortext" style="display:none;"></span>' +
-      '</div>';
-  };
+  // // Twitter bootstrap-friendly HTML boilerplate for standard inputs
+  // jsonform.fieldTemplate = function (inner) {
+  //   return '<div ' +
+  //     '<% for(var key in elt.htmlMetaData) {%>' +
+  //     '<%= key %>="<%= elt.htmlMetaData[key] %>" ' +
+  //     '<% }%>' +
+  //     'class="pure-control-group jsonform-error-<%= keydash %>' +
+  //     '<%= elt.htmlClass ? " " + elt.htmlClass : "" %>' +
+  //     '<%= (node.schemaElement && node.schemaElement.required && (node.schemaElement.type !== "boolean") ? " jsonform-required" : "") %>' +
+  //     '<%= (node.readOnly ? " jsonform-readonly" : "") %>' +
+  //     '<%= (node.disabled ? " jsonform-disabled" : "") %>' +
+  //     '">' +
+  //     '<% if (!elt.notitle) { %>' +
+  //     '<label for="<%= node.id %>"><%= node.title ? node.title : node.name %></label>' +
+  //     '<% } %>' +
+  //     '<% if (node.prepend || node.append) { %>' +
+  //     '<div class="<% if (node.prepend) { %>input-group<% } %>' +
+  //     '<% if (node.append) { %> input-group<% } %>">' +
+  //     '<% if (node.prepend) { %>' +
+  //     '<span class="input-group-addon"><%= node.prepend %></span>' +
+  //     '<% } %>' +
+  //     '<% } %>' +
+  //     inner +
+  //     '<% if (node.append) { %>' +
+  //     '<span class="input-group-addon"><%= node.append %></span>' +
+  //     '<% } %>' +
+  //     '<% if (node.prepend || node.append) { %>' +
+  //     '</div>' +
+  //     '<% } %>' +
+  //     '<% if (node.description) { %>' +
+  //     '<span class="help-block"><%= node.description %></span>' +
+  //     '<% } %>' +
+  //     '<span class="help-block jsonform-errortext" style="display:none;"></span>' +
+  //     '</div>';
+  // };
 
   var inputFieldTemplate = function (type) {
     return {
-      'template': '<input type="' + type + '" ' +
-        'class=\'form-control<%= (fieldHtmlClass ? " " + fieldHtmlClass : "") %>\'' +
-        'name="<%= node.name %>" value="<%= escape(value) %>" id="<%= id %>"' +
-        ' aria-label="<%= node.title ? escape(node.title) : node.name %>"' +
-        '<%= (node.disabled? " disabled" : "")%>' +
-        '<%= (node.readOnly ? " readonly=\'readonly\'" : "") %>' +
-        '<%= (node.schemaElement && (node.schemaElement.step > 0 || node.schemaElement.step == "any") ? " step=\'" + node.schemaElement.step + "\'" : "") %>' +
-        '<%= (node.schemaElement && node.schemaElement.minLength ? " minlength=\'" + node.schemaElement.minLength + "\'" : "") %>' +
-        '<%= (node.schemaElement && node.schemaElement.maxLength ? " maxlength=\'" + node.schemaElement.maxLength + "\'" : "") %>' +
-        '<%= (node.schemaElement && node.schemaElement.required && (node.schemaElement.type !== "boolean") ? " required=\'required\'" : "") %>' +
-        '<%= (node.placeholder? " placeholder=" + \'"\' + escape(node.placeholder) + \'"\' : "")%>' +
-        ' />',
+      template:  (data) => `<input type="${type}" name="${data.node.name}" value="${escape(data.value)}" id="${data.id}" ${data.node.disabled ? " disabled" : ""} ${data.node.readOnly ? " readonly='readonly'" : ""} ${data.node.schemaElement && (data.node.schemaElement.step > 0 || data.node.schemaElement.step == "any") ? " step='" + data.node.schemaElement.step + "'" : ""} ${data.node.schemaElement && data.node.schemaElement.minLength ? " minlength='" + data.node.schemaElement.minLength + "'" : ""} ${data.node.schemaElement && data.node.schemaElement.maxLength ? " maxlength='" + data.node.schemaElement.maxLength + "'" : ""} ${data.node.schemaElement && data.node.schemaElement.required && (data.node.schemaElement.type !== "boolean") ? " required='required'" : ""} ${data.node.placeholder ? " placeholder='" + escape(data.node.placeholder) + "'" : ""} />`,
       'fieldtemplate': true,
       'inputfield': true,
       'childTemplate': function (inner) {
@@ -377,7 +362,7 @@
       'template': ''
     },
     'root': {
-      'template': '<div class="pure-form pure-form-aligned"><%= children %></div>',
+      template: (data) => `<div class="pure-form pure-form-aligned">${data.children}</div>`
     },
     'text': inputFieldTemplate('text'),
     'password': inputFieldTemplate('password'),
@@ -517,7 +502,7 @@
         '<span><%= (key instanceof Object ? key.title : key) %></span></label> ' +
         '<% }); %>' +
         '</div>',
-      'fieldtemplate': true,
+      'fieldtemplate': true, // should be warped by fieldtemplate
       'inputfield': true,
       'onInsert': function (evt, node) {
         var activeClass = 'active';
@@ -940,13 +925,13 @@
       }
     },
     'submit': {
-      'template': '<input type="submit" <% if (id) { %> id="<%= id %>" <% } %> class="btn btn-primary <%= elt.htmlClass?elt.htmlClass:"" %>" value="<%= value || node.title %>"<%= (node.disabled? " disabled" : "")%>/>'
+      template : (data) => `<input type="submit" ${data.id ? `id="${data.id}"` : ''} class="btn btn-primary ${data.elt.htmlClass || ""}" value="${data.value || data.node.title}" ${data.node.disabled ? 'disabled' : ''} />`
     },
     'button': {
       'template': ' <button type="button" <% if (id) { %> id="<%= id %>" <% } %> class="btn btn-default <%= elt.htmlClass?elt.htmlClass:"" %>"><%= node.title %></button> '
     },
     'actions': {
-      'template': '<div class="<%= elt.htmlClass?elt.htmlClass:"" %>"><%= children %></div>'
+      template : (data) => `<div class="${data.elt.htmlClass || ""}">${data.children}</div>`
     },
     'hidden': {
       'template': '<input type="hidden" id="<%= id %>" name="<%= node.name %>" value="<%= escape(value) %>" />',
@@ -1154,64 +1139,6 @@
           $(child.el).hide();
         });
         $(node.children[0].el).show();
-      }
-    },
-
-    /**
-     * A "question" field lets user choose a response among possible choices.
-     * The field is not associated with any schema key. A question should be
-     * part of a "questions" field that binds a series of questions to a
-     * schema key.
-     */
-    'question': {
-      'template': '<div id="<%= node.id %>"><% node.options.forEach((key, val)=>{ %><label class="<%= (node.formElement.optionsType === "radiobuttons") ? "btn btn-default" : "" %><%= ((key instanceof Object && key.htmlClass) ? " " + key.htmlClass : "") %>"><input type="radio" <% if (node.formElement.optionsType === "radiobuttons") { %> style="position:absolute;left:-9999px;" <% } %>name="<%= node.id %>" value="<%= val %>"<%= (node.disabled? " disabled" : "")%>/><span><%= (key instanceof Object ? key.title : key) %></span></label> <% }); %></div>',
-      'fieldtemplate': true,
-      'onInsert': function (evt, node) {
-        var activeClass = 'active';
-        var elt = node.formElement || {};
-        if (elt.activeClass) {
-          activeClass += ' ' + elt.activeClass;
-        }
-
-        // Bind to change events on radio buttons
-        $(node.el).find('input[type="radio"]').on('change', function (evt) {
-          var questionNode = null;
-          var option = node.options[$(this).val()];
-          if (!node.parentNode || !node.parentNode.el) return;
-
-          $(this).parent().parent().find('label').removeClass(activeClass);
-          $(this).parent().addClass(activeClass);
-          $(node.el).nextAll().hide();
-          $(node.el).nextAll().find('input[type="radio"]').prop('checked', false);
-
-          // Execute possible actions (set key value, form submission, open link,
-          // move on to next question)
-          if (option.value) {
-            // Set the key of the 'Questions' parent
-            $(node.parentNode.el).find('input[type="hidden"]').val(option.value);
-          }
-          if (option.next) {
-            questionNode = node.parentNode.children.find(child => {
-              return (child.formElement && (child.formElement.qid === option.next));
-            });
-            $(questionNode.el).show();
-            $(questionNode.el).nextAll().hide();
-            $(questionNode.el).nextAll().find('input[type="radio"]').prop('checked', false);
-          }
-          if (option.href) {
-            if (option.target) {
-              window.open(option.href, option.target);
-            }
-            else {
-              window.location = option.href;
-            }
-          }
-          if (option.submit) {
-            setTimeout(function () {
-              node.ownerTree.submit();
-            }, 0);
-          }
-        });
       }
     }
   };
@@ -2490,10 +2417,10 @@
     // Wrap the view template in the generic field template
     // (note the strict equality to 'false', needed as we fallback
     // to the view's setting otherwise)
-    if ((this.fieldtemplate !== false) &&
-      (this.fieldtemplate || this.view.fieldtemplate)) {
-      template = jsonform.fieldTemplate(template);
-    }
+    // if ((this.fieldtemplate !== false) &&
+    //   (this.fieldtemplate || this.view.fieldtemplate)) {
+    //   template = jsonform.fieldTemplate(template);
+    // }
 
     // Wrap the content in the child template of its parent if necessary.
     if (this.parentNode && this.parentNode.view &&
@@ -2522,7 +2449,7 @@
     }
 
     // Apply the HTML template
-    html = tmpl(template, fieldTemplateSettings)(data);
+    html = template(data);
     return html;
   };
 
