@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
   <title>Getting started with JSON Form</title>
-  <link rel="stylesheet" type="text/css" href="pure-min.css" />
+  <link rel="stylesheet" type="text/css" href="forms-nr.css" />
 </head>
 <body>
   <form></form>
@@ -13,7 +13,7 @@
   <script type="text/javascript">
     $('form').jsonForm({
       schema: {
-        "Username": { "type": "text" },
+        "Username": { "type": "text", "description": "The field is a text."},
         "Password": { "type": "password" },
         'Birth Day': { "type": 'date' },
         'datetime': { "type": 'datetime' },
@@ -28,11 +28,11 @@
         'week': { "type": 'week' },
         "range": {
           "type": "range",
-          "description": "The field should appear as a range that accepts values between 0 (excluded) and 200 by steps of 20 on browsers that support the \"range\" input type.<br/>Note that the \"step\" constraint is not enforced when the form is submitted.",
-          "default": 40,
+          "description": "The field is range.",
+          "default": 4,
           "minimum": 0,
           "exclusiveMinimum": true,
-          "maximum": 200
+          "maximum": 10
         },
         "checkbox": {
           "type": "boolean"
