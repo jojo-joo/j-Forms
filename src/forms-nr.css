@@ -1,17 +1,3 @@
-/*!
-Pure v3.0.0
-Copyright 2013 Yahoo!
-Licensed under the BSD License.
-https://github.com/pure-css/pure/blob/master/LICENSE
-*/
-/*csslint box-model:false*/
-/*
-Box-model set to false because we're setting a height on select elements, which
-also have border and padding. This is done because some browsers don't render
-the padding. We explicitly set the box-model for select elements to border-box,
-so we can ignore the csslint warning.
-*/
-
 .pure-form input:not([type="range"]),
 .pure-form select,
 .pure-form textarea {
@@ -69,14 +55,6 @@ so we can ignore the csslint warning.
     margin: 0;
     padding: 0.35em 0 0.75em;
     border: 0;
-}
-.pure-form legend {
-    display: block;
-    width: 100%;
-    padding: 0.3em 0;
-    margin-bottom: 0.3em;
-    color: #333;
-    border-bottom: 1px solid #e5e5e5;
 }
 
 .pure-form-aligned .pure-control-group {
