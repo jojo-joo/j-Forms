@@ -23,6 +23,10 @@ so we can ignore the csslint warning.
     box-sizing: border-box;
 }
 
+.pure-form input[type="range"] {
+    padding: 0.5em 0.6em;
+}
+
 .pure-form input:not([type="range"]):focus,
 .pure-form select:focus,
 .pure-form textarea:focus {
