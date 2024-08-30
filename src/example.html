@@ -5,15 +5,15 @@
   <title>Getting started with JSON Form</title>
   <link rel="stylesheet" type="text/css" href="forms-nr.css" />
 </head>
-<body>
-  <form></form>
+<body style="display: flex; justify-content: center; height: 100vh;">
+  <form style="width:340px;"></form>
   <div id="res" class="alert"></div>
   <script type="text/javascript" src="zepto.min.js"></script>
   <script type="text/javascript" src="jsonform.js"></script>
   <script type="text/javascript">
     $('form').jsonForm({
       schema: {
-        "Username": { "type": "text", "description": "The field is a text."},
+        "USERNAME": { "type": "text"},
         "Password": { "type": "password" },
         'Birth Day': { "type": 'date' },
         'datetime': { "type": 'datetime' },
