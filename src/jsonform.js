@@ -307,42 +307,21 @@
     });
   };
 
-
-  // // Twitter bootstrap-friendly HTML boilerplate for standard inputs
-  // jsonform.fieldTemplate = function (inner) {
-  //   return '<div ' +
-  //     '<% for(var key in elt.htmlMetaData) {%>' +
-  //     '<%= key %>="<%= elt.htmlMetaData[key] %>" ' +
-  //     '<% }%>' +
-  //     'class="pure-control-group jsonform-error-<%= keydash %>' +
-  //     '<%= elt.htmlClass ? " " + elt.htmlClass : "" %>' +
-  //     '<%= (node.schemaElement && node.schemaElement.required && (node.schemaElement.type !== "boolean") ? " jsonform-required" : "") %>' +
-  //     '<%= (node.readOnly ? " jsonform-readonly" : "") %>' +
-  //     '<%= (node.disabled ? " jsonform-disabled" : "") %>' +
-  //     '">' +
-  //     '<% if (!elt.notitle) { %>' +
-  //     '<label for="<%= node.id %>"><%= node.title ? node.title : node.name %></label>' +
-  //     '<% } %>' +
-  //     '<% if (node.prepend || node.append) { %>' +
-  //     '<div class="<% if (node.prepend) { %>input-group<% } %>' +
-  //     '<% if (node.append) { %> input-group<% } %>">' +
-  //     '<% if (node.prepend) { %>' +
-  //     '<span class="input-group-addon"><%= node.prepend %></span>' +
-  //     '<% } %>' +
-  //     '<% } %>' +
-  //     inner +
-  //     '<% if (node.append) { %>' +
-  //     '<span class="input-group-addon"><%= node.append %></span>' +
-  //     '<% } %>' +
-  //     '<% if (node.prepend || node.append) { %>' +
-  //     '</div>' +
-  //     '<% } %>' +
-  //     '<% if (node.description) { %>' +
-  //     '<span class="help-block"><%= node.description %></span>' +
-  //     '<% } %>' +
-  //     '<span class="help-block jsonform-errortext" style="display:none;"></span>' +
-  //     '</div>';
-  // };
+  // Twitter bootstrap-friendly HTML boilerplate for standard inputs
+  jsonform.fieldTemplate = (inner, elt, node) => {
+    const metaData = elt && elt.htmlMetaData ? elt.htmlMetaData : {};
+    const metaDataAttrs = Object.keys(metaData).map(key => `${key}="${metaData[key]}"`).join(' ');
+    const classList = `pure-control-group ${node.schemaElement && node.schemaElement.required && (node.schemaElement.type !== "boolean") ? "jsonform-required" : ""} ${node.readOnly ? "jsonform-readonly" : ""} ${node.disabled ? "jsonform-disabled" : ""}`;
+    const label = node.title ? node.title : node.name;
+    const description = node.description ? `<span class="help-block">${node.description}</span>` : '';
+  
+    return `<div ${metaDataAttrs} class="${classList}">
+      ${elt && elt.notitle ? '' : `<label for="${node.id}">${label}</label>`}
+      ${inner}
+      ${description}
+      <span class="help-block jsonform-errortext" style="display:none;"></span>
+    </div>`;
+  };
 
   var inputFieldTemplate = function (type) {
     return {
@@ -2419,7 +2398,7 @@
     // to the view's setting otherwise)
     // if ((this.fieldtemplate !== false) &&
     //   (this.fieldtemplate || this.view.fieldtemplate)) {
-    //   template = jsonform.fieldTemplate(template);
+    //   template = jsonform.fieldTemplate(template, data.elt, data.node);
     // }
 
     // Wrap the content in the child template of its parent if necessary.
@@ -2450,6 +2429,7 @@
 
     // Apply the HTML template
     html = template(data);
+    html = jsonform.fieldTemplate(html, data.elt, data.node);
     return html;
   };
 
