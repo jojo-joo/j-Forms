@@ -326,7 +326,6 @@
   var inputFieldTemplate = function (type) {
     return {
       template:  (data) => `<input type="${type}" name="${data.node.name}" value="${escape(data.value)}" id="${data.id}" ${data.node.disabled ? " disabled" : ""} ${data.node.readOnly ? " readonly='readonly'" : ""} ${data.node.schemaElement && (data.node.schemaElement.step > 0 || data.node.schemaElement.step == "any") ? " step='" + data.node.schemaElement.step + "'" : ""} ${data.node.schemaElement && data.node.schemaElement.minLength ? " minlength='" + data.node.schemaElement.minLength + "'" : ""} ${data.node.schemaElement && data.node.schemaElement.maxLength ? " maxlength='" + data.node.schemaElement.maxLength + "'" : ""} ${data.node.schemaElement && data.node.schemaElement.required && (data.node.schemaElement.type !== "boolean") ? " required='required'" : ""} ${data.node.placeholder ? " placeholder='" + escape(data.node.placeholder) + "'" : ""} />`,
-      'fieldtemplate': true,
       'childTemplate': function (inner) {
         return '<div class="pure-control-group">' +
           inner +
@@ -366,7 +365,6 @@
         ' step=<%= range.step %>' +
         '<%= (node.schemaElement && node.schemaElement.required ? " required=\'required\'" : "") %>' +
         ' /><% if (range.indicator) { %><span class="range-value" rel="<%= id %>"><%= escape(value) %></span><% } %></div>',
-      'fieldtemplate': true,
       'onInput': function (evt, elt) {
         const valueIndicator = document.querySelector('span.range-value[rel="' + elt.id + '"]');
         if (valueIndicator) {
@@ -413,7 +411,6 @@
         '<%= (node.disabled? " disabled" : "")%>' +
         '<%= (node.schemaElement && node.schemaElement.required ? " required=\'required\'" : "") %>' +
         ' />',
-      'fieldtemplate': true,
       'onInsert': function (evt, node) {
         $(node.el).find('#' + escapeSelector(node.id)).spectrum({
           preferredFormat: "hex",
@@ -432,8 +429,7 @@
         '<%= (node.schemaElement && node.schemaElement.maxLength ? " maxlength=\'" + node.schemaElement.maxLength + "\'" : "") %>' +
         '<%= (node.schemaElement && node.schemaElement.required ? " required=\'required\'" : "") %>' +
         '<%= (node.placeholder? " placeholder=" + \'"\' + escape(node.placeholder) + \'"\' : "")%>' +
-        '><%= value %></textarea>',
-      'fieldtemplate': true,
+        '><%= value %></textarea>'
     },
     'checkbox': {
       'template': '<div class="checkbox"><label><input type="checkbox" id="<%= id %>" ' +
@@ -443,7 +439,6 @@
         '<%= (node.schemaElement && node.schemaElement.required && (node.schemaElement.type !== "boolean") ? " required=\'required\'" : "") %>' +
         ' /><%= node.inlinetitle || "" %>' +
         '</label></div>',
-      'fieldtemplate': true,
       'getElement': function (el) {
         return $(el).parent().get(0);
       }
@@ -453,7 +448,6 @@
         '<%= (node.schemaElement && node.schemaElement.required ? " required=\'required\'" : "") %>' +
         '<%= (node.formElement && node.formElement.accept ? (" accept=\'" + node.formElement.accept + "\'") : "") %>' +
         '/>',
-      'fieldtemplate': true,
     },
     'select': {
       'template': '<select name="<%= node.name %>" id="<%= id %>"' +
@@ -463,7 +457,6 @@
         '> ' +
         '<% node.options.forEach((key, val)=>{ if(key instanceof Object) { if (value === key.value) { %> <option selected value="<%= key.value %>"><%= key.title %></option> <% } else { %> <option value="<%= key.value %>"><%= key.title %></option> <% }} else { if (value === key) { %> <option selected value="<%= key %>"><%= key %></option> <% } else { %><option value="<%= key %>"><%= key %></option> <% }}}); %> ' +
         '</select>',
-      'fieldtemplate': true,
     },
     'radiobuttons': {
       'template': '<div id="<%= node.id %>">' +
@@ -474,7 +467,6 @@
         '<span><%= (key instanceof Object ? key.title : key) %></span></label> ' +
         '<% }); %>' +
         '</div>',
-      'fieldtemplate': true, // should be warped by fieldtemplate
       'onInsert': function (evt, node) {
         var activeClass = 'active';
         var elt = node.formElement || {};
@@ -489,7 +481,6 @@
     },
     'checkboxes': {
       'template': '<div><%= choiceshtml %></div>',
-      'fieldtemplate': true,
       'onBeforeRender': function (data, node) {
         // Build up choices from the enumeration list
         var choices = null;
@@ -529,7 +520,6 @@
         '<a href="#" class="btn btn-default _jsonform-array-deletelast"><i class="glyphicon glyphicon-minus-sign" title="Delete last"></i></a>' +
         '</span>' +
         '</div>',
-      'fieldtemplate': true,
       'array': true,
       'childTemplate': function (inner, enableDrag) {
         if ($('').sortable) {
@@ -673,7 +663,6 @@
         '</div>' +
         '<a href="#" class="btn btn-default _jsonform-array-addmore"><i class="glyphicon glyphicon-plus-sign" title="Add new"></i></a> ' +
         '<a href="#" class="btn btn-default _jsonform-array-deleteitem"><i class="glyphicon glyphicon-minus-sign" title="Delete item"></i></a></div>',
-      'fieldtemplate': true,
       'array': true,
       'childTemplate': function (inner) {
         return '<div data-idx="<%= node.childPos %>" class="tab-pane">' +
@@ -838,7 +827,6 @@
     },
     'help': {
       'template': '<span class="help-block" style="padding-top:5px"><%= elt.helpvalue %></span>',
-      'fieldtemplate': true
     },
     'msg': {
       'template': '<%= elt.msg %>'
@@ -1096,7 +1084,6 @@
         '<input type="hidden" id="<%= node.id %>" name="<%= node.name %>" value="<%= escape(value) %>" />' +
         '<%= children %>' +
         '</div>',
-      'fieldtemplate': true,
       'getElement': function (el) {
         return $(el).parent().get(0);
       },
@@ -2314,8 +2301,8 @@
       if (this.view && this.view.getElement) {
         this.el = this.view.getElement(this.el);
       }
-      if ((this.fieldtemplate !== false) &&
-        this.view && this.view.fieldtemplate) {
+      // if ((this.fieldtemplate !== false) &&
+      //   this.view && this.view.fieldtemplate) {
         // The field template wraps the element two or three level deep
         // in the DOM tree, depending on whether there is anything prepended
         // or appended to the input field
@@ -2324,7 +2311,7 @@
           this.el = this.el.parent();
         }
         this.el = this.el.get(0);
-      }
+      //}
       if (this.parentNode && this.parentNode.view &&
         this.parentNode.view.childTemplate) {
         // TODO: the child template may introduce more than one level,
@@ -3166,7 +3153,6 @@
     return false;
 
   };
-
 
   /**
    * Returns true if the form displays a "required" field.
