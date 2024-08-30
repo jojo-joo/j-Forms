@@ -327,7 +327,6 @@
     return {
       template:  (data) => `<input type="${type}" name="${data.node.name}" value="${escape(data.value)}" id="${data.id}" ${data.node.disabled ? " disabled" : ""} ${data.node.readOnly ? " readonly='readonly'" : ""} ${data.node.schemaElement && (data.node.schemaElement.step > 0 || data.node.schemaElement.step == "any") ? " step='" + data.node.schemaElement.step + "'" : ""} ${data.node.schemaElement && data.node.schemaElement.minLength ? " minlength='" + data.node.schemaElement.minLength + "'" : ""} ${data.node.schemaElement && data.node.schemaElement.maxLength ? " maxlength='" + data.node.schemaElement.maxLength + "'" : ""} ${data.node.schemaElement && data.node.schemaElement.required && (data.node.schemaElement.type !== "boolean") ? " required='required'" : ""} ${data.node.placeholder ? " placeholder='" + escape(data.node.placeholder) + "'" : ""} />`,
       'fieldtemplate': true,
-      'inputfield': true,
       'childTemplate': function (inner) {
         return '<div class="pure-control-group">' +
           inner +
@@ -368,7 +367,6 @@
         '<%= (node.schemaElement && node.schemaElement.required ? " required=\'required\'" : "") %>' +
         ' /><% if (range.indicator) { %><span class="range-value" rel="<%= id %>"><%= escape(value) %></span><% } %></div>',
       'fieldtemplate': true,
-      'inputfield': true,
       'onInput': function (evt, elt) {
         const valueIndicator = document.querySelector('span.range-value[rel="' + elt.id + '"]');
         if (valueIndicator) {
@@ -416,7 +414,6 @@
         '<%= (node.schemaElement && node.schemaElement.required ? " required=\'required\'" : "") %>' +
         ' />',
       'fieldtemplate': true,
-      'inputfield': true,
       'onInsert': function (evt, node) {
         $(node.el).find('#' + escapeSelector(node.id)).spectrum({
           preferredFormat: "hex",
@@ -437,7 +434,6 @@
         '<%= (node.placeholder? " placeholder=" + \'"\' + escape(node.placeholder) + \'"\' : "")%>' +
         '><%= value %></textarea>',
       'fieldtemplate': true,
-      'inputfield': true
     },
     'checkbox': {
       'template': '<div class="checkbox"><label><input type="checkbox" id="<%= id %>" ' +
@@ -448,7 +444,6 @@
         ' /><%= node.inlinetitle || "" %>' +
         '</label></div>',
       'fieldtemplate': true,
-      'inputfield': true,
       'getElement': function (el) {
         return $(el).parent().get(0);
       }
@@ -459,7 +454,6 @@
         '<%= (node.formElement && node.formElement.accept ? (" accept=\'" + node.formElement.accept + "\'") : "") %>' +
         '/>',
       'fieldtemplate': true,
-      'inputfield': true
     },
     'select': {
       'template': '<select name="<%= node.name %>" id="<%= id %>"' +
@@ -470,7 +464,6 @@
         '<% node.options.forEach((key, val)=>{ if(key instanceof Object) { if (value === key.value) { %> <option selected value="<%= key.value %>"><%= key.title %></option> <% } else { %> <option value="<%= key.value %>"><%= key.title %></option> <% }} else { if (value === key) { %> <option selected value="<%= key %>"><%= key %></option> <% } else { %><option value="<%= key %>"><%= key %></option> <% }}}); %> ' +
         '</select>',
       'fieldtemplate': true,
-      'inputfield': true
     },
     'radiobuttons': {
       'template': '<div id="<%= node.id %>">' +
@@ -482,7 +475,6 @@
         '<% }); %>' +
         '</div>',
       'fieldtemplate': true, // should be warped by fieldtemplate
-      'inputfield': true,
       'onInsert': function (evt, node) {
         var activeClass = 'active';
         var elt = node.formElement || {};
@@ -498,7 +490,6 @@
     'checkboxes': {
       'template': '<div><%= choiceshtml %></div>',
       'fieldtemplate': true,
-      'inputfield': true,
       'onBeforeRender': function (data, node) {
         // Build up choices from the enumeration list
         var choices = null;
@@ -913,8 +904,7 @@
       template : (data) => `<div class="${data.elt.htmlClass || ""}">${data.children}</div>`
     },
     'hidden': {
-      'template': '<input type="hidden" id="<%= id %>" name="<%= node.name %>" value="<%= escape(value) %>" />',
-      'inputfield': true
+      'template': '<input type="hidden" id="<%= id %>" name="<%= node.name %>" value="<%= escape(value) %>" />'
     },
     'tabs': {
       'template': '<ul class="nav nav-tabs <%= elt.htmlClass?elt.htmlClass:"" %>"' +
@@ -975,7 +965,6 @@
         '</div>' +
         '</div>' +
         '</fieldset>',
-      'inputfield': true,
       'getElement': function (el) {
         return $(el).parent().get(0);
       },
@@ -1108,7 +1097,6 @@
         '<%= children %>' +
         '</div>',
       'fieldtemplate': true,
-      'inputfield': true,
       'getElement': function (el) {
         return $(el).parent().get(0);
       },
@@ -1749,7 +1737,7 @@
       this.arrayPath = [];
     }
 
-    if (this.view && this.view.inputfield) {
+    if (this.view) {
       // Simple input field, extract the value from the origin,
       // set the target value and reset the origin value
       params = $(':input', this.el).serializeArray();
@@ -1959,7 +1947,7 @@
       }
     }
 
-    if (this.view && this.view.inputfield && this.schemaElement) {
+    if (this.view && this.schemaElement) {
       // Case 1: simple input field
       if (values) {
         // Form has already been submitted, use former value if defined.
@@ -2092,7 +2080,7 @@
       return 0;
     }
 
-    if (this.view.inputfield && this.schemaElement) {
+    if (this.schemaElement) {
       // Case 1: node is a simple input field that links to a key in the schema.
       // The schema key looks typically like:
       //  foo.bar[].baz.toto[].truc[].bidule
@@ -2991,31 +2979,6 @@
     if (!view) {
       throw new Error('The JSONForm contains an element whose type is unknown: "' +
         formElement.type + '"');
-    }
-
-
-    if (schemaElement) {
-      // The form element is linked to an element in the schema.
-      // Let's make sure the types are compatible.
-      // In particular, the element must not be a "container"
-      // (or must be an "object" or "array" container)
-      if (!view.inputfield && !view.array &&
-        (formElement.type !== 'selectfieldset') &&
-        (schemaElement.type !== 'object')) {
-        throw new Error('The JSONForm contains an element that links to an ' +
-          'element in the JSON schema (key: "' + formElement.key + '") ' +
-          'and that should not based on its type ("' + formElement.type + '")');
-      }
-    }
-    else {
-      // The form element is not linked to an element in the schema.
-      // This means the form element must be a "container" element,
-      // and must not define an input field.
-      if (view.inputfield && (formElement.type !== 'selectfieldset')) {
-        throw new Error('The JSONForm defines an element of type ' +
-          '"' + formElement.type + '" ' +
-          'but no "key" property to link the input field to the JSON schema');
-      }
     }
 
     // A few characters need to be escaped to use the ID as jQuery selector
