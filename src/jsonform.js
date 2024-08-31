@@ -63,12 +63,17 @@
   };
 
   const escape = (str) => {
-    return str.replace(/&/g, '&amp;')
-              .replace(/</g, '&lt;')
-              .replace(/>/g, '&gt;')
-              .replace(/"/g, '&quot;')
-              .replace(/'/g, '&#x27;')
-              .replace(/\//g, '&#x2F;');
+    try {return str.replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;');} 
+    catch (error)
+    {
+      console.error('error:', error.message)
+    }
+    
   };
 
   (function() {
@@ -355,16 +360,20 @@
     'url': inputFieldTemplate('url'),
     'week': inputFieldTemplate('week'),
     'range': {
-      'template': '<div class="range"><input type="range" ' +
-        '<%= (fieldHtmlClass ? "class=\'" + fieldHtmlClass + "\' " : "") %>' +
-        'name="<%= node.name %>" value="<%= escape(value) %>" id="<%= id %>"' +
-        ' aria-label="<%= node.title ? escape(node.title) : node.name %>"' +
-        '<%= (node.disabled? " disabled" : "")%>' +
-        ' min=<%= range.min %>' +
-        ' max=<%= range.max %>' +
-        ' step=<%= range.step %>' +
-        '<%= (node.schemaElement && node.schemaElement.required ? " required=\'required\'" : "") %>' +
-        ' /><% if (range.indicator) { %><span class="range-value" rel="<%= id %>"><%= escape(value) %></span><% } %></div>',
+      template : (data) => {
+        const classAttribute = data.fieldHtmlClass ? `class="${data.fieldHtmlClass}" ` : '';
+        const disabledAttribute = data.node.disabled ? ' disabled' : '';
+        const requiredAttribute = data.node.schemaElement && data.node.schemaElement.required ? ' required="required"' : '';
+        const ariaLabel = data.node.title ? escape(data.node.title) : data.node.name;
+        const indicator = data.range.indicator ? `<span class="range-value" rel="${data.id}">${escape(data.value)}</span>` : '';
+      
+        return `<div class="range"><input type="range" ${classAttribute}
+          name="${data.node.name}" value="${escape(data.value)}" id="${data.id}"
+          aria-label="${ariaLabel}" ${disabledAttribute} min="${data.range.min}"
+          max="${data.range.max}" step="${data.range.step}" ${requiredAttribute} />
+          ${indicator}
+        </div>`;
+      },
       'onInput': function (evt, elt) {
         const valueIndicator = document.querySelector('span.range-value[rel="' + elt.id + '"]');
         if (valueIndicator) {
@@ -417,19 +426,6 @@
           showInput: true
         });
       }
-    },
-    'textarea': { /* not supported any more */
-      'template': '<textarea id="<%= id %>" name="<%= node.name %>" ' +
-        '<%= (fieldHtmlClass ? "class=\'" + fieldHtmlClass + "\' " : "") %>' +
-        'style="height:<%= elt.height || "150px" %>;width:<%= elt.width || "100%" %>;"' +
-        ' aria-label="<%= node.title ? escape(node.title) : node.name %>"' +
-        '<%= (node.disabled? " disabled" : "")%>' +
-        '<%= (node.readOnly ? " readonly=\'readonly\'" : "") %>' +
-        '<%= (node.schemaElement && node.schemaElement.minLength ? " minlength=\'" + node.schemaElement.minLength + "\'" : "") %>' +
-        '<%= (node.schemaElement && node.schemaElement.maxLength ? " maxlength=\'" + node.schemaElement.maxLength + "\'" : "") %>' +
-        '<%= (node.schemaElement && node.schemaElement.required ? " required=\'required\'" : "") %>' +
-        '<%= (node.placeholder? " placeholder=" + \'"\' + escape(node.placeholder) + \'"\' : "")%>' +
-        '><%= value %></textarea>'
     },
     'checkbox': {
       'template': '<div class="checkbox"><label><input type="checkbox" id="<%= id %>" ' +

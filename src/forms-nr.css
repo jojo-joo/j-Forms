@@ -1,6 +1,5 @@
 .pure-form input:not([type="range"]),
-.pure-form select,
-.pure-form textarea {
+.pure-form select {
     width: 100%;
     padding: 0.5em 0.6em;
     border: 1px solid #ccc;
@@ -14,22 +13,19 @@
 }
 
 .pure-form input:not([type="range"]):focus,
-.pure-form select:focus,
-.pure-form textarea:focus {
+.pure-form select:focus{
     outline: 0;
     border-color: #129FEA;
 }
 
 .pure-form input:not([type="range"])[disabled],
-.pure-form select[disabled],
-.pure-form textarea[disabled] {
+.pure-form select[disabled] {
     cursor: not-allowed;
     background-color: #eaeded;
     color: #cad2d3;
 }
 
 .pure-form input:focus:invalid,
-.pure-form textarea:focus:invalid,
 .pure-form select:focus:invalid {
     color: #b94a48;
     border-color: #e9322d;
