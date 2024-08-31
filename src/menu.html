@@ -1,45 +1,59 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
-  <title>Getting started with JSON Form</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A layout example with a side menu that hides on mobile, just like the Pure website.">
+    <title>Responsive Side Menu – Layout Examples – Pure</title>
+    <link rel="stylesheet" href="pure-min.css">
+    <link rel="stylesheet" href="menu.css">
+    <style>
+        .content {
+            display: none;
+        }
+        .content.active {
+            display: block;
+        }
+    </style>
 </head>
-<body >
-<style>
-    .custom-restricted-width {
-        /* To limit the menu width to the content of the menu: */
-        display: inline-block;
-        /* Or set the width explicitly: */
-        /* width: 10em; */
-    }
-</style>
-<div class="pure-menu custom-restricted-width">
-    <span class="pure-menu-heading">Yahoo Sites</span>
-    <ul class="pure-menu-list">
-        <li class="pure-menu-item">
-            <a href="#" class="pure-menu-link">Flickr</a>
-        </li>
-        <li class="pure-menu-item">
-            <a href="#" class="pure-menu-link">Messenger</a>
-        </li>
-        <li class="pure-menu-item">
-            <a href="#" class="pure-menu-link">Sports</a>
-        </li>
-        <li class="pure-menu-item">
-            <a href="#" class="pure-menu-link">Finance</a>
-        </li>
-        <li class="pure-menu-heading">More Sites</li>
-        <li class="pure-menu-item">
-            <a href="#" class="pure-menu-link">Games</a>
-        </li>
-        <li class="pure-menu-item">
-            <a href="#" class="pure-menu-link">News</a>
-        </li>
-        <li class="pure-menu-item">
-            <a href="#" class="pure-menu-link">OMG!</a>
-        </li>
-    </ul>
+<body>
+
+<div id="layout">
+    <!-- Menu toggle -->
+    <a href="#menu" id="menuLink" class="menu-link">
+        <!-- Hamburger icon -->
+        <span></span>
+    </a>
+
+    <div id="menu">
+        <div class="pure-menu">
+            <a class="pure-menu-heading" href="#company">Company</a>
+
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item"><a href="#home" class="pure-menu-link" onclick="showContent('home')">Home</a></li>
+                <li class="pure-menu-item"><a href="#about" class="pure-menu-link" onclick="showContent('about')">About</a></li>
+                <li class="pure-menu-item pure-menu-selected"><a href="#services" class="pure-menu-link" onclick="showContent('services')">Services</a></li>
+                <li class="pure-menu-item"><a href="#contact" class="pure-menu-link" onclick="showContent('contact')">Contact</a></li>
+            </ul>
+        </div>
+    </div>
 </div>
+
+<div id="home" class="content">Welcome to the Home page!</div>
+<div id="about" class="content">Learn more About us.</div>
+<div id="services" class="content active">Our Services are listed here.</div>
+<div id="contact" class="content">Get in touch with us through the Contact page.</div>
+
+
+<script src="menu.js"></script>
+<script>
+    function showContent(id) {
+        var contents = document.querySelectorAll('.content');
+        contents.forEach(function(content) {
+            content.classList.remove('active');
+        });
+        document.getElementById(id).classList.add('active');
+    }
+</script>
 </body>
 </html>
