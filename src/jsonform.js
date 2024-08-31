@@ -428,13 +428,14 @@
       }
     },
     'checkbox': {
-      'template': '<div class="checkbox"><label><input type="checkbox" id="<%= id %>" ' +
-        '<%= (fieldHtmlClass ? " class=\'" + fieldHtmlClass + "\'": "") %>' +
-        'name="<%= node.name %>" value="1" <% if (value) {%>checked<% } %>' +
-        '<%= (node.disabled? " disabled" : "")%>' +
-        '<%= (node.schemaElement && node.schemaElement.required && (node.schemaElement.type !== "boolean") ? " required=\'required\'" : "") %>' +
-        ' /><%= node.inlinetitle || "" %>' +
-        '</label></div>',
+      // 'template': '<div class="checkbox"><label><input type="checkbox" id="<%= id %>" ' +
+      //   '<%= (fieldHtmlClass ? " class=\'" + fieldHtmlClass + "\'": "") %>' +
+      //   'name="<%= node.name %>" value="1" <% if (value) {%>checked<% } %>' +
+      //   '<%= (node.disabled? " disabled" : "")%>' +
+      //   '<%= (node.schemaElement && node.schemaElement.required && (node.schemaElement.type !== "boolean") ? " required=\'required\'" : "") %>' +
+      //   ' /><%= node.inlinetitle || "" %>' +
+      //   '</label></div>',
+        template : (data) => `<div class="checkbox"><label class="toggle-switch"><input type="checkbox" id="${data.id}" name="${data.node.name}" value="1" ${data.value ? 'checked' : ''} ${data.node.disabled ? 'disabled' : ''} ${data.node.schemaElement && data.node.schemaElement.required && (data.node.schemaElement.type !== "boolean") ? 'required="required"' : ''} /> ${data.node.inlinetitle || ""}<div class="slider"></div></label></div>`,
       'getElement': function (el) {
         return $(el).parent().get(0);
       }
