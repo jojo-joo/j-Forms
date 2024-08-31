@@ -428,14 +428,7 @@
       }
     },
     'checkbox': {
-      // 'template': '<div class="checkbox"><label><input type="checkbox" id="<%= id %>" ' +
-      //   '<%= (fieldHtmlClass ? " class=\'" + fieldHtmlClass + "\'": "") %>' +
-      //   'name="<%= node.name %>" value="1" <% if (value) {%>checked<% } %>' +
-      //   '<%= (node.disabled? " disabled" : "")%>' +
-      //   '<%= (node.schemaElement && node.schemaElement.required && (node.schemaElement.type !== "boolean") ? " required=\'required\'" : "") %>' +
-      //   ' /><%= node.inlinetitle || "" %>' +
-      //   '</label></div>',
-        template : (data) => `<div class="checkbox"><label class="toggle-switch"><input type="checkbox" id="${data.id}" name="${data.node.name}" value="1" ${data.value ? 'checked' : ''} ${data.node.disabled ? 'disabled' : ''} ${data.node.schemaElement && data.node.schemaElement.required && (data.node.schemaElement.type !== "boolean") ? 'required="required"' : ''} /> ${data.node.inlinetitle || ""}<div class="slider"></div></label></div>`,
+      template : (data) => `<div class="checkbox"><label class="toggle-switch"><input type="checkbox" id="${data.id}" name="${data.node.name}" value="1" ${data.value ? 'checked' : ''} ${data.node.disabled ? 'disabled' : ''} ${data.node.schemaElement && data.node.schemaElement.required && (data.node.schemaElement.type !== "boolean") ? 'required="required"' : ''} /> ${data.node.inlinetitle || ""}<div class="slider"></div></label></div>`,
       'getElement': function (el) {
         return $(el).parent().get(0);
       }
@@ -447,13 +440,19 @@
         '/>',
     },
     'select': {
-      'template': '<select name="<%= node.name %>" id="<%= id %>"' +
-        'class=\'form-control<%= (fieldHtmlClass ? " " + fieldHtmlClass : "") %>\'' +
-        '<%= (node.schemaElement && node.schemaElement.disabled? " disabled" : "")%>' +
-        '<%= (node.schemaElement && node.schemaElement.required ? " required=\'required\'" : "") %>' +
-        '> ' +
-        '<% node.options.forEach((key, val)=>{ if(key instanceof Object) { if (value === key.value) { %> <option selected value="<%= key.value %>"><%= key.title %></option> <% } else { %> <option value="<%= key.value %>"><%= key.title %></option> <% }} else { if (value === key) { %> <option selected value="<%= key %>"><%= key %></option> <% } else { %><option value="<%= key %>"><%= key %></option> <% }}}); %> ' +
-        '</select>',
+      template : (data) => `<select name="${data.node.name}" id="${data.id}" ${data.node.schemaElement && data.node.schemaElement.disabled ? " disabled" : ""} ${data.node.schemaElement && data.node.schemaElement.required ? " required='required'" : ""}>
+  ${data.node.options.map((key, val) => {
+    if (key instanceof Object) {
+      return data.value === key.value
+        ? `<option selected value="${key.value}">${key.title}</option>`
+        : `<option value="${key.value}">${key.title}</option>`;
+    } else {
+      return data.value === key
+        ? `<option selected value="${key}">${key}</option>`
+        : `<option value="${key}">${key}</option>`;
+    }
+  }).join(' ')}
+</select>`
     },
     'radiobuttons': {
       'template': '<div id="<%= node.id %>">' +
