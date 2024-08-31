@@ -10,7 +10,7 @@
  *
  * The library depends on:
  *  - jQuery
- *  - the underscore library
+ *  - the underscore library. not neccesary in modern browsers, discarded.
  *  - a JSON parser/serializer. Nothing to worry about in modern browsers.
  *  - the JSONFormValidation library (in jsv.js) for validation purpose
  *
@@ -22,7 +22,7 @@
  * dynamic by essence.
  */
 
-(function ($, _) {
+(function ($) {
   /**
    * Regular expressions used to extract array indexes in input field names
    */
@@ -453,27 +453,6 @@
     }
   }).join(' ')}
 </select>`
-    },
-    'radiobuttons': {
-      'template': '<div id="<%= node.id %>">' +
-        '<% node.options.forEach((key, val)=>{ %>' +
-        '<label class="btn btn-default <% if (((key instanceof Object) && (value === key.value)) || (value === key)) { %>active btn-success<% } %>">' +
-        '<input<%= (fieldHtmlClass ? " class=\'" + fieldHtmlClass + "\'": "") %> type="radio" style="position:absolute;left:-9999px;" ' +
-        '<% if (((key instanceof Object) && (value === key.value)) || (value === key)) { %> checked="checked" <% } %> name="<%= node.name %>" value="<%= (key instanceof Object ? key.value : key) %>" />' +
-        '<span><%= (key instanceof Object ? key.title : key) %></span></label> ' +
-        '<% }); %>' +
-        '</div>',
-      'onInsert': function (evt, node) {
-        var activeClass = 'active';
-        var elt = node.formElement || {};
-        if (elt.activeClass) {
-          activeClass += ' ' + elt.activeClass;
-        }
-        $(node.el).find('label').on('click', function () {
-          $(this).parent().find('label').removeClass(activeClass);
-          $(this).addClass(activeClass);
-        });
-      }
     },
     'checkboxes': {
       'template': '<div><%= choiceshtml %></div>',
@@ -3367,5 +3346,4 @@
   window.JSONForm.util.getObjKey = jsonform.util.getObjKey;
   window.JSONForm.util.setObjKey = jsonform.util.setObjKey;
 
-})(((typeof Zepto !== 'undefined') ? Zepto : { fn: {} }),
-  ((typeof _ !== 'undefined') ? _ : null));
+})(((typeof Zepto !== 'undefined') ? Zepto : { fn: {} }));
