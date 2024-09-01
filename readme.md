@@ -30,6 +30,17 @@ To provide embedded engineers with a solution that is tidy, fast, simple, and ro
 3. **Builtin Style Support:** Support for VUE, MATERIAL, and BOOTSTRAP styles.
 4. **Automatic Code Generation:** Definition of data formats, with automatic generation of front-end, protocol, and back-end code.
 
+## Roadmap
+- 0.1.00 can simple work, according to a json schema, generate css/html/js/c into a single c header file, which can run on esp32 esp-idf.
+- 0.2.00 can runs on esp32 arduino.
+- 0.3.00 can runs on stm32.
+- 0.4.00 support materia style.
+- 0.5.00 support bootstrap style.
+- 0.6.00 support client side verify.
+- 0.7.00 support server side verify.
+- 0.8.00 support json schema sanity check.
+- 0.9.00 more controls, fix issues, for 1.0.00 release
+
 ##  log
 derived from jsonform, replaced underscore to es6;
 orginal version, 3,284,244 bytes
