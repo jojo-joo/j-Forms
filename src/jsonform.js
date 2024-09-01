@@ -804,57 +804,6 @@
     'msg': {
       'template': '<%= elt.msg %>'
     },
-    'fieldset': {
-      'template': '<fieldset class="pure-control-group jsonform-error-<%= keydash %> <% if (elt.expandable) { %>expandable<% } %> <%= elt.htmlClass?elt.htmlClass:"" %>" ' +
-        '<% if (id) { %> id="<%= id %>"<% } %>' +
-        '>' +
-        '<% if (node.title || node.legend) { %><legend role="treeitem" aria-expanded="false"><%= node.title || node.legend %></legend><% } %>' +
-        '<% if (elt.expandable) { %><div class="pure-control-group"><% } %>' +
-        '<%= children %>' +
-        '<% if (elt.expandable) { %></div><% } %>' +
-        '</fieldset>',
-      onInsert: function (evt, node) {
-        if (node.el !== null) {
-          $('.expandable > div, .expandable > fieldset', node.el).hide();
-          // See #233
-          $(".expandable", node.el).removeClass("expanded");
-        }
-      }
-    },
-    'advancedfieldset': {
-      'template': '<fieldset' +
-        '<% if (id) { %> id="<%= id %>"<% } %>' +
-        ' class="expandable <%= elt.htmlClass?elt.htmlClass:"" %>">' +
-        '<legend role="treeitem" aria-expanded="false"><%= (node.title || node.legend) ? (node.title || node.legend) : "Advanced options" %></legend>' +
-        '<div class="pure-control-group">' +
-        '<%= children %>' +
-        '</div>' +
-        '</fieldset>',
-      onInsert: function (evt, node) {
-        if (node.el !== null) {
-          $('.expandable > div, .expandable > fieldset', node.el).hide();
-          // See #233
-          $(".expandable", node.el).removeClass("expanded");
-        }
-      }
-    },
-    'authfieldset': {
-      'template': '<fieldset' +
-        '<% if (id) { %> id="<%= id %>"<% } %>' +
-        ' class="expandable <%= elt.htmlClass?elt.htmlClass:"" %>">' +
-        '<legend role="treeitem" aria-expanded="false"><%= (node.title || node.legend) ? (node.title || node.legend) : "Authentication settings" %></legend>' +
-        '<div class="pure-control-group">' +
-        '<%= children %>' +
-        '</div>' +
-        '</fieldset>',
-      onInsert: function (evt, node) {
-        if (node.el !== null) {
-          $('.expandable > div, .expandable > fieldset', node.el).hide();
-          // See #233
-          $(".expandable", node.el).removeClass("expanded");
-        }
-      }
-    },
     'submit': {
       template : (data) => `<input type="submit" ${data.id ? `id="${data.id}"` : ''} class="btn btn-primary ${data.elt.htmlClass || ""}" value="${data.value || data.node.title}" ${data.node.disabled ? 'disabled' : ''} />`
     },
