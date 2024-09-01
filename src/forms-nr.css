@@ -74,10 +74,6 @@
     background: #129FEA;
 }
 
-.pure-form input[type="range"] {
-    padding: 0.5em 0.6em;
-}
-
 .pure-form input:not([type="range"]):focus,
 .pure-form select:focus{
     outline: 0;
@@ -133,6 +129,12 @@
 .pure-form-aligned .pure-control-group button,
 .pure-form-aligned .pure-control-group select {
     flex: 1;
+}
+
+.range {
+    flex: 1;
+    width: 100%;
+    padding: 0.5em 0.6em;
 }
 
 .toggle-switch {

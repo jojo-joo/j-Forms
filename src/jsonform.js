@@ -364,12 +364,11 @@
         const classAttribute = data.fieldHtmlClass ? `class="${data.fieldHtmlClass}" ` : '';
         const disabledAttribute = data.node.disabled ? ' disabled' : '';
         const requiredAttribute = data.node.schemaElement && data.node.schemaElement.required ? ' required="required"' : '';
-        const ariaLabel = data.node.title ? escape(data.node.title) : data.node.name;
+
         const indicator = data.range.indicator ? `<span class="range-value" rel="${data.id}">${escape(data.value)}</span>` : '';
       
         return `<div class="range"><input type="range" ${classAttribute}
           name="${data.node.name}" value="${escape(data.value)}" id="${data.id}"
-          aria-label="${ariaLabel}" ${disabledAttribute} min="${data.range.min}"
           max="${data.range.max}" step="${data.range.step}" ${requiredAttribute} />
           ${indicator}
         </div>`;

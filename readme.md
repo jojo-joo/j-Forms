@@ -39,7 +39,7 @@ To provide embedded engineers with a solution that is tidy, fast, simple, and ro
 - 0.6.00 support client side verify.
 - 0.7.00 support server side verify.
 - 0.8.00 support json schema sanity check.
-- 0.9.00 more controls, fix issues, for 1.0.00 release
+- 0.9.00 fix issues, full test, full ci, prepare for 1.0.00 release.
 
 ##  log
 derived from jsonform, replaced underscore to es6;
