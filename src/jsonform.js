@@ -451,8 +451,7 @@
         ? `<option selected value="${key}">${key}</option>`
         : `<option value="${key}">${key}</option>`;
     }
-  }).join(' ')}
-</select>`
+  }).join(' ')}</select>`
     },
     'checkboxes': {
       'template': '<div><%= choiceshtml %></div>',
@@ -861,7 +860,7 @@
       template : (data) => `<input type="submit" ${data.id ? `id="${data.id}"` : ''} class="btn btn-primary ${data.elt.htmlClass || ""}" value="${data.value || data.node.title}" ${data.node.disabled ? 'disabled' : ''} />`
     },
     'button': {
-      'template': ' <button type="button" <% if (id) { %> id="<%= id %>" <% } %> class="btn btn-default <%= elt.htmlClass?elt.htmlClass:"" %>"><%= node.title %></button> '
+      template :(data) => `<button type="button" ${data.id ? `id="${data.id}"` : ''} class="button-secondary pure-button ${data.elt.htmlClass ? data.elt.htmlClass : ''}">${data.node.title}</button>`
     },
     'actions': {
       template : (data) => `<div class="${data.elt.htmlClass || ""}">${data.children}</div>`
