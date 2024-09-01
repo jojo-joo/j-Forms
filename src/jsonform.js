@@ -2484,8 +2484,7 @@
     this.formDesc = clone(formDesc);
 
     // Compute form prefix if no prefix is given.
-    this.formDesc.prefix = this.formDesc.prefix ||
-      'jsonform-' + Date.now();
+    this.formDesc.prefix = this.formDesc.prefix || 'jsonform-' + Date.now();
 
     // JSON schema shorthand
     if (this.formDesc.schema && !this.formDesc.schema.properties) {
@@ -2494,22 +2493,22 @@
       };
     }
 
-    // Ensure layout is set
-    this.formDesc.form = this.formDesc.form || [
-      '*',
-      {
-        type: 'actions',
-        items: [
-          {
-            type: 'submit',
-            value: 'Submit'
-          }
-        ]
-      }
-    ];
-    this.formDesc.form = (Array.isArray(this.formDesc.form) ?
-      this.formDesc.form :
-      [this.formDesc.form]);
+    // // Ensure layout is set
+    // this.formDesc.form = this.formDesc.form || [
+    //   '*',
+    //   {
+    //     type: 'actions',
+    //     items: [
+    //       {
+    //         type: 'submit',
+    //         value: 'Submit'
+    //       }
+    //     ]
+    //   }
+    // ];
+    // this.formDesc.form = (Array.isArray(this.formDesc.form) ?
+    //   this.formDesc.form :
+    //   [this.formDesc.form]);
 
     this.formDesc.params = this.formDesc.params || {};
 
@@ -2539,23 +2538,23 @@
     // - '*' means "generate all possible fields using default layout"
     // - a key reference to target a specific data element
     // - a more complex object to generate specific form sections
-    this.formDesc.form.forEach(formElement => {
-      if (formElement === '*') {
+    // this.formDesc.form.forEach(formElement => {
+    //   if (formElement === '*') {
         Object.keys(this.formDesc.schema.properties).forEach(key => {
           this.root.appendChild(this.buildFromLayout({
             key: key
           }));
         }, this);
-      }
-      else {
-        if (typeof (formElement) === 'string') {
-          formElement = {
-            key: formElement
-          };
-        }
-        this.root.appendChild(this.buildFromLayout(formElement));
-      }
-    }, this);
+      // }
+      // else {
+      //   if (typeof (formElement) === 'string') {
+      //     formElement = {
+      //       key: formElement
+      //     };
+      //   }
+      //   this.root.appendChild(this.buildFromLayout(formElement));
+      // }
+    // }, this);
   };
 
 
@@ -3051,7 +3050,6 @@
    *  Use this option if JSON Form is used multiple times in an application with
    *  schemas that have overlapping parameter names to avoid running into multiple
    *  IDs issues. Default value is "jsonform-[counter]".
-   * - transloadit: Transloadit parameters when transloadit is used
    * - validate: Validates form against schema upon submission. Uses the value
    * of the "validate" property as validator if it is an object.
    * - displayErrors: Function to call with errors upon form submission.
@@ -3074,13 +3072,6 @@
     form.initialize(options);
     form.render(formElt.get(0));
 
-    // TODO: move that to formTree.render
-    if (options.transloadit) {
-      formElt.append('<input type="hidden" name="params" value=\'' +
-        escapeHTML(JSON.stringify(options.transloadit.params)) +
-        '\'>');
-    }
-
     // Keep a direct pointer to the JSON schema for form submission purpose
     formElt.data("jsonform-tree", form);
 
@@ -3093,15 +3084,6 @@
 
     // Initialize tabs sections, if any
     initializeTabs(formElt);
-
-    // Initialize expandable sections, if any
-    $('.expandable > div, .expandable > fieldset', formElt).hide();
-    formElt.on('click', '.expandable > legend', function () {
-      var parent = $(this).parent();
-      parent.toggleClass('expanded');
-      parent.find('legend').attr("aria-expanded", parent.hasClass("expanded"))
-      $('> div', parent).slideToggle(100);
-    });
 
     return form;
   };
