@@ -175,7 +175,6 @@
    */
   var jsonform = { util: {} };
 
-
   // From backbonejs
   var escapeHTML = function (string) {
     if (!isSet(string)) {
@@ -312,7 +311,7 @@
     });
   };
 
-  // Twitter bootstrap-friendly HTML boilerplate for standard inputs
+  // pure-css friendly HTML boilerplate for standard inputs
   jsonform.fieldTemplate = (inner, elt, node) => {
     const metaData = elt && elt.htmlMetaData ? elt.htmlMetaData : {};
     const metaDataAttrs = Object.keys(metaData).map(key => `${key}="${metaData[key]}"`).join(' ');
@@ -805,7 +804,7 @@
       'template': '<%= elt.msg %>'
     },
     'submit': {
-      template : (data) => `<input type="submit" ${data.id ? `id="${data.id}"` : ''} class="btn btn-primary ${data.elt.htmlClass || ""}" value="${data.value || data.node.title}" ${data.node.disabled ? 'disabled' : ''} />`
+      template : (data) => `<input type="submit" ${data.id ? `id="${data.id}"` : ''} class="button-success  pure-button ${data.elt.htmlClass || ""}" value="${data.value || data.node.title}" ${data.node.disabled ? 'disabled' : ''} />`
     },
     'button': {
       template :(data) => `<button type="button" ${data.id ? `id="${data.id}"` : ''} class="button-secondary pure-button ${data.elt.htmlClass ? data.elt.htmlClass : ''}">${data.node.title}</button>`
@@ -2169,7 +2168,10 @@
 
     // Apply the HTML template
     html = template(data);
-    html = jsonform.fieldTemplate(html, data.elt, data.node);
+    if (data.schema && data.schema.type != 'submit') {
+        html = jsonform.fieldTemplate(html, data.elt, data.node);
+    }
+    
     return html;
   };
 
@@ -2493,23 +2495,6 @@
       };
     }
 
-    // // Ensure layout is set
-    // this.formDesc.form = this.formDesc.form || [
-    //   '*',
-    //   {
-    //     type: 'actions',
-    //     items: [
-    //       {
-    //         type: 'submit',
-    //         value: 'Submit'
-    //       }
-    //     ]
-    //   }
-    // ];
-    // this.formDesc.form = (Array.isArray(this.formDesc.form) ?
-    //   this.formDesc.form :
-    //   [this.formDesc.form]);
-
     this.formDesc.params = this.formDesc.params || {};
 
     // Create the root of the tree
@@ -2534,27 +2519,11 @@
    * @function
    */
   formTree.prototype.buildTree = function () {
-    // Parse and generate the form structure based on the elements encountered:
-    // - '*' means "generate all possible fields using default layout"
-    // - a key reference to target a specific data element
-    // - a more complex object to generate specific form sections
-    // this.formDesc.form.forEach(formElement => {
-    //   if (formElement === '*') {
-        Object.keys(this.formDesc.schema.properties).forEach(key => {
-          this.root.appendChild(this.buildFromLayout({
-            key: key
-          }));
-        }, this);
-      // }
-      // else {
-      //   if (typeof (formElement) === 'string') {
-      //     formElement = {
-      //       key: formElement
-      //     };
-      //   }
-      //   this.root.appendChild(this.buildFromLayout(formElement));
-      // }
-    // }, this);
+    Object.keys(this.formDesc.schema.properties).forEach(key => {
+      this.root.appendChild(this.buildFromLayout({
+        key: key
+      }));
+    }, this);
   };
 
 

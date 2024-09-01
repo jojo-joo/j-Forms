@@ -1,4 +1,4 @@
-.pure-form input:not([type="range"]),
+.pure-form input:not([type="range"]):not([type="submit"]),
 .pure-form select {
     width: 100%;
     padding: 0.5em 0.6em;
@@ -55,15 +55,14 @@
 .button-secondary {
     color: white;
     border-radius: 4px;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
 }
 
 .button-success {
-    background: rgb(28, 184, 65);
+    background: #4CAF50;
 }
 
 .button-error {
-    background: rgb(202, 60, 60);
+    background: #F44336;;
 }
 
 .button-warning {
