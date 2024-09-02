@@ -52,3 +52,20 @@
     document.addEventListener('click', handleEvent);
 
 }(this, this.document));
+
+function showContent(id, el) {
+    var contents = document.querySelectorAll('.content');
+    contents.forEach(function(content) {
+        content.classList.remove('active');
+    });
+    document.getElementById(id).classList.add('active');
+
+    // Remove 'pure-menu-selected' from all menu items
+    var menuItems = document.querySelectorAll('.pure-menu-item');
+    menuItems.forEach(function(item) {
+        item.classList.remove('pure-menu-selected');
+    });
+
+    // Add 'pure-menu-selected' to the clicked menu item
+    el.parentElement.classList.add('pure-menu-selected');
+}

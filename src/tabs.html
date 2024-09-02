@@ -16,17 +16,17 @@
 </style>
 </head>
 <body style="display: flex; justify-content: center; height: 100vh;">
-  <div id="home" class="content"><form style="width:340px;"></form></div>
-  <div id="about" class="content">3</div>
+  <div style="width:340px;" id="home" class="content"></div>
+  <div style="width:340px;" id="about" class="content"></div>
   <div id="services" class="content">4</div>
   <div id="contact" class="content">5</div>
   <div id="res" class="alert"></div>
   <script type="text/javascript" src="./zepto.min.js"></script>
   <script type="text/javascript" src="./jsonform.js"></script>
+  <script type="text/javascript" src="menu.js"></script>
   <script type="text/javascript">
-    $('form').jsonForm({
+    $('#home').jsonForm({
       schema: {
-
         "USERNAME": { "type": "text"},
         "Password": { "type": "password" },
         'Birth Day': { "type": 'date' },
@@ -40,7 +40,11 @@
         'time': { "type": 'time' },
         'url': { "type": 'url' },
         'week': { "type": 'week' },
-        'button': { "type": 'button' , "title":'BUTTON'},
+        'button': { "type": 'button' , "title":'BUTTON'}
+      }
+    });
+    $('#about').jsonForm({
+      schema: {
         "range": {
           "type": "range",
           "default": 4,
@@ -73,31 +77,11 @@
           <ul class="pure-menu-list">
               <li class="pure-menu-item"><a href="#home" class="pure-menu-link" onclick="showContent('home', this)">Home3</a></li>
               <li class="pure-menu-item"><a href="#about" class="pure-menu-link" onclick="showContent('about', this)">About</a></li>
-              <li class="pure-menu-item pure-menu-selected"><a href="#services" class="pure-menu-link" onclick="showContent('services', this)">Services</a></li>
+              <li class="pure-menu-item"><a href="#services" class="pure-menu-link" onclick="showContent('services', this)">Services</a></li>
               <li class="pure-menu-item"><a href="#contact" class="pure-menu-link" onclick="showContent('contact', this)">Contact</a></li>
           </ul>
       </div>
   </div>
 </div>
-
-<script src="menu.js"></script>
-<script>
-  function showContent(id, el) {
-      var contents = document.querySelectorAll('.content');
-      contents.forEach(function(content) {
-          content.classList.remove('active');
-      });
-      document.getElementById(id).classList.add('active');
-
-      // Remove 'pure-menu-selected' from all menu items
-      var menuItems = document.querySelectorAll('.pure-menu-item');
-      menuItems.forEach(function(item) {
-          item.classList.remove('pure-menu-selected');
-      });
-
-      // Add 'pure-menu-selected' to the clicked menu item
-      el.parentElement.classList.add('pure-menu-selected');
-  }
-</script>
 </body>
 </html>
