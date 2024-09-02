@@ -41,6 +41,11 @@ To provide embedded engineers with a solution that is tidy, fast, simple, and ro
 - 0.8.00 support json schema sanity check.
 - 0.9.00 fix issues, full test, full ci, prepare for 1.0.00 release.
 
+## Restriction
+- consider the key length in embeded system is no greater than 16 generally, jform set the maximun key size to  16
+- to simplify the json syntax,  Represent different forms using JSON array. for each key/value pair in json, if the value is an object, it is a control, if the value is an array, it is a tab.
+
+
 ##  log
 derived from jsonform, replaced underscore to es6;
 orginal version, 3,284,244 bytes
