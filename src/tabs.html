@@ -16,18 +16,16 @@
 </style>
 </head>
 <body style="display: flex; justify-content: center; height: 100vh;">
-  <div style="width:340px;" id="home" class="content"></div>
-  <div style="width:340px;" id="about" class="content"></div>
+  <div style="width:360px;" id="home" class="content"></div>
+  <div style="width:360px;" id="about" class="content"></div>
   <div id="services" class="content">4</div>
   <div id="contact" class="content">5</div>
-  <div id="res" class="alert"></div>
   <script type="text/javascript" src="./zepto.min.js"></script>
   <script type="text/javascript" src="./jsonform.js"></script>
   <script type="text/javascript" src="menu.js"></script>
   <script type="text/javascript">
     $('#home').jsonForm({
       schema: {
-        
         "USERNAME": { "type": "text"},
         "Password": { "type": "password" },
         'Birth Day': { "type": 'date' },
@@ -41,15 +39,11 @@
         'time': { "type": 'time' },
         'url': { "type": 'url' },
         'week': { "type": 'week' },
-        'button': { "type": 'button' , "title":'BUTTON'}
-      }
-    });
-    $('#about').jsonForm({
-      schema: {
+        'button': { "type": 'button' , "title":'BUTTON'},
         "range": {"type": "range", "default": 4,"minimum": 0,"exclusiveMinimum": true,"maximum": 10},
         "this is checkbox": {"type": "checkbox"},
         "gender": {"type": "select","enum": ["male", "female", "alien"]},
-        "submit": { "type": "submit"},
+        "submit": { "type": "submit"}
       }
     });
   </script>

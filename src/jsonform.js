@@ -1968,173 +1968,6 @@
     });
   };
 
-
-
-  /**
-   * Inserts an item in the array at the requested position and renders the item.
-   *
-   * @function
-   * @param {Number} idx Insertion index
-   */
-  formNode.prototype.insertArrayItem = function (idx, domElement) {
-    var i = 0;
-
-    // Insert element at the end of the array if index is not given
-    if (idx === undefined) {
-      idx = this.children.length;
-    }
-
-    // Create the additional array item at the end of the list,
-    // using the item template created when tree was initialized
-    // (the call to resetValues ensures that 'arrayPath' is correctly set)
-    var child = this.childTemplate.clone();
-    this.appendChild(child);
-    child.resetValues();
-
-    // To create a blank array item at the requested position,
-    // shift values down starting at the requested position
-    // one to insert (note we start with the end of the array on purpose)
-    for (i = this.children.length - 2; i >= idx; i--) {
-      this.children[i].moveValuesTo(this.children[i + 1]);
-    }
-
-    // Initialize the blank node we've created with default values
-    this.children[idx].resetValues();
-    this.children[idx].computeInitialValues();
-
-    // Re-render all children that have changed
-    for (i = idx; i < this.children.length; i++) {
-      this.children[i].render(domElement);
-    }
-  };
-
-
-  /**
-   * Remove an item from an array
-   *
-   * @function
-   * @param {Number} idx The index number of the item to remove
-   */
-  formNode.prototype.deleteArrayItem = function (idx) {
-    var i = 0;
-    var child = null;
-
-    // Delete last item if no index is given
-    if (idx === undefined) {
-      idx = this.children.length - 1;
-    }
-
-    // Move values up in the array
-    for (i = idx; i < this.children.length - 1; i++) {
-      this.children[i + 1].moveValuesTo(this.children[i]);
-      this.children[i].render();
-    }
-
-    // Remove the last array item from the DOM tree and from the form tree
-    this.removeChild();
-  };
-
-  /**
-   * Returns the minimum/maximum number of items that an array field
-   * is allowed to have according to the schema definition of the fields
-   * it contains.
-   *
-   * The function parses the schema definitions of the array items that
-   * compose the current "array" node and returns the minimum value of
-   * "maxItems" it encounters as the maximum number of items, and the
-   * maximum value of "minItems" as the minimum number of items.
-   *
-   * The function reports a -1 for either of the boundaries if the schema
-   * does not put any constraint on the number of elements the current
-   * array may have of if the current node is not an array.
-   *
-   * Note that array boundaries should be defined in the JSON Schema using
-   * "minItems" and "maxItems". The code also supports "minLength" and
-   * "maxLength" as a fallback, mostly because it used to by mistake (see #22)
-   * and because other people could make the same mistake.
-   *
-   * @function
-   * @return {Object} An object with properties "minItems" and "maxItems"
-   *  that reports the corresponding number of items that the array may
-   *  have (value is -1 when there is no constraint for that boundary)
-   */
-  formNode.prototype.getArrayBoundaries = function () {
-    var boundaries = {
-      minItems: -1,
-      maxItems: -1
-    };
-    if (!this.view || !this.view.array) return boundaries;
-
-    var getNodeBoundaries = function (node, initialNode) {
-      var schemaKey = null;
-      var arrayKey = null;
-      var boundaries = {
-        minItems: -1,
-        maxItems: -1
-      };
-      initialNode = initialNode || node;
-
-      if (node.view && node.view.array && (node !== initialNode)) {
-        // New array level not linked to an array in the schema,
-        // so no size constraints
-        return boundaries;
-      }
-
-      if (node.key) {
-        // Note the conversion to target the actual array definition in the
-        // schema where minItems/maxItems may be defined. If we're still looking
-        // at the initial node, the goal is to convert from:
-        //  foo[0].bar[3].baz to foo[].bar[].baz
-        // If we're not looking at the initial node, the goal is to look at the
-        // closest array parent:
-        //  foo[0].bar[3].baz to foo[].bar
-        arrayKey = node.key.replace(/\[[0-9]+\]/g, '[]');
-        if (node !== initialNode) {
-          arrayKey = arrayKey.replace(/\[\][^\[\]]*$/, '');
-        }
-        schemaKey = getSchemaKey(
-          node.ownerTree.formDesc.schema.properties,
-          arrayKey
-        );
-        if (!schemaKey) return boundaries;
-        return {
-          minItems: schemaKey.minItems || schemaKey.minLength || -1,
-          maxItems: schemaKey.maxItems || schemaKey.maxLength || -1
-        };
-      }
-      else {
-        node.children.forEach(child => {
-          var subBoundaries = getNodeBoundaries(child, initialNode);
-          if (subBoundaries.minItems !== -1) {
-            if (boundaries.minItems !== -1) {
-              boundaries.minItems = Math.max(
-                boundaries.minItems,
-                subBoundaries.minItems
-              );
-            }
-            else {
-              boundaries.minItems = subBoundaries.minItems;
-            }
-          }
-          if (subBoundaries.maxItems !== -1) {
-            if (boundaries.maxItems !== -1) {
-              boundaries.maxItems = Math.min(
-                boundaries.maxItems,
-                subBoundaries.maxItems
-              );
-            }
-            else {
-              boundaries.maxItems = subBoundaries.maxItems;
-            }
-          }
-        });
-      }
-      return boundaries;
-    };
-    return getNodeBoundaries(this);
-  };
-
-
   /**
    * Form tree class.
    *
@@ -2208,9 +2041,7 @@
    */
   formTree.prototype.buildTree = function () {
     Object.keys(this.formDesc.schema.properties).forEach(key => {
-      this.root.appendChild(this.buildFromLayout({
-        key: key
-      }));
+      this.root.appendChild(this.buildFromLayout({key: key}));
     }, this);
   };
 
@@ -2764,15 +2595,5 @@
   $.fn.jsonFormValue = function () {
     return jsonform.getFormValue(this);
   };
-
-  // Expose the getFormValue method to the window object
-  // (other methods exposed as jQuery functions)
-  window.JSONForm = window.JSONForm || { util: {} };
-  window.JSONForm.getFormValue = jsonform.getFormValue;
-  window.JSONForm.fieldTemplate = jsonform.fieldTemplate;
-  window.JSONForm.fieldTypes = jsonform.elementTypes;
-  window.JSONForm.getInitialValue = getInitialValue;
-  window.JSONForm.util.getObjKey = jsonform.util.getObjKey;
-  window.JSONForm.util.setObjKey = jsonform.util.setObjKey;
 
 })(((typeof Zepto !== 'undefined') ? Zepto : { fn: {} }));
