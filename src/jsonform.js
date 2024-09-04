@@ -43,7 +43,7 @@
     evaluate: /\{\[([\s\S]+?)\]\}/g,
     interpolate: /\{\{([\s\S]+?)\}\}/g
   };
-  
+
   const clone = (value) => {
     if (Array.isArray(value)) {
       return [...value];
@@ -238,7 +238,7 @@
 
   jsonform.elementTypes = {
     'none': {'template': ''},
-    'root': {template: (data) => `<div class="pure-form pure-form-aligned"><div class="pure-control-group"><h1>sdf</h1></div>${data.children}</div>`},
+    'root': {template: (data) => `<div class="pure-form pure-form-aligned"><div class="pure-control-group"><h1>${data.title}</h1></div>${data.children}</div>`},
     'text': inputFieldTemplate('text'),
     'password': inputFieldTemplate('password'),
     'date': inputFieldTemplate('date'),
@@ -1525,8 +1525,6 @@
     return values;
   };
 
-
-
   /**
    * Renders the node.
    *
@@ -1542,7 +1540,6 @@
     this.setContent(html, el);
     this.enhance();
   };
-
 
   /**
    * Inserts/Updates the HTML content of the node in the DOM.
@@ -1639,6 +1636,7 @@
    */
   formNode.prototype.generate = function () {
     var data = {
+      title: this.title,
       id: this.id,
       keydash: this.keydash,
       elt: this.formElement,
@@ -1871,7 +1869,9 @@
     // Create the root of the tree
     this.root = new formNode();
     this.root.ownerTree = this;
+    this.root.title = this.formDesc.title;
     this.root.view = jsonform.elementTypes['root'];
+    //this.root.view = jsonform.elementTypes['root'].template(this.root);
 
     // Generate the tree from the form description
     this.buildTree();
@@ -1880,7 +1880,6 @@
     // (for arrays, the computation actually creates the form nodes)
     this.computeInitialValues();
   };
-
 
   /**
    * Constructs the tree from the form description.
@@ -1892,9 +1891,8 @@
   formTree.prototype.buildTree = function () {
     Object.keys(this.formDesc.schema).forEach(key => {
       this.root.appendChild(this.buildFromLayout({key: key}));
-    }, this);
+    });
   };
-
 
   /**
    * Builds the internal form tree representation from the requested layout.
@@ -2082,41 +2080,6 @@
     // Set event handlers
     if (!formElement.handlers) {
       formElement.handlers = {};
-    }
-
-    // Parse children recursively
-    if (node.view.array) {
-      // The form element is an array. The number of items in an array
-      // is by definition dynamic, up to the form user (through "Add more",
-      // "Delete" commands). The positions of the items in the array may
-      // also change over time (through "Move up", "Move down" commands).
-      //
-      // The form node stores a "template" node that serves as basis for
-      // the creation of an item in the array.
-      //
-      // Array items may be complex forms themselves, allowing for nesting.
-      //
-      // The initial values set the initial number of items in the array.
-      // Note a form element contains at least one item when it is rendered.
-      if (formElement.items) {
-        key = formElement.items[0] || formElement.items;
-      }
-      else {
-        key = formElement.key + '[]';
-      }
-      if (typeof (key) === 'string') {
-        key = { key: key };
-      }
-      node.setChildTemplate(this.buildFromLayout(key));
-    }
-    else if (formElement.items) {
-      // The form element defines children elements
-      formElement.items.forEach(item => {
-        if (typeof (item) === 'string') {
-          item = { key: item };
-        }
-        node.appendChild(this.buildFromLayout(item));
-      }, this);
     }
 
     return node;
@@ -2403,6 +2366,7 @@
    */
   $.fn.jsonForm = function (key, options) {
     var formElt = this;
+    options.title = options.schema.title || key;
 
     //options = defaults({}, options, { submitEvent: 'submit' });
 
