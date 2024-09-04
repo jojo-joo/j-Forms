@@ -25,30 +25,38 @@
   <script type="text/javascript" src="menu.js"></script>
   <script type="text/javascript" src="tabs.js"></script>
   <script type="text/javascript">
-    $('body').jsonForms(schema);
-    //   schema: {
-    //     "USERNAME": { "type": "text"},
-    //     "Password": { "type": "password" },
-    //     'Birth Day': { "type": 'date' },
-    //     'datetime': { "type": 'datetime' },
-    //     'datetime-local': { "type": 'datetime-local' },
-    //     'email': { "type": 'email' },
-    //     'month': { "type": 'month' },
-    //     'number': { "type": 'number' },
-    //     'search': { "type": 'search' },
-    //     'tel': { "type": 'tel' },
-    //     'time': { "type": 'time' },
-    //     'url': { "type": 'url' },
-    //     'week': { "type": 'week' },
-    //     'button': { "type": 'button' , "title":'BUTTON'},
-    //     "range": {"type": "range", "default": 4,"minimum": 0,"exclusiveMinimum": true,"maximum": 10},
-    //     "this is checkbox": {"type": "checkbox"},
-    //     "gender": {"type": "select","enum": ["male", "female", "alien"]},
-    //     "submit": { "type": "submit"}
-    //   }
-    // });
-   </script>
-<!-- <div id="layout">
+  $(document).ready(function () {
+    $('body').jsonForms({
+      "form": {
+        "USERNAME": { "type": "text" },
+        "Password": { "type": "password" },
+        'Birth Day': { "type": 'date' },
+        'datetime': { "type": 'datetime' },
+        'datetime-local': { "type": 'datetime-local' },
+        'email': { "type": 'email' },
+        'month': { "type": 'month' },
+        'number': { "type": 'number' },
+        'search': { "type": 'search' },
+        'tel': { "type": 'tel' },
+        'time': { "type": 'time' },
+        'url': { "type": 'url' },
+        'week': { "type": 'week' },
+        "range": { "type": "range", "default": 4, "minimum": 0, "exclusiveMinimum": true, "maximum": 10 },
+        "this is checkbox": { "type": "checkbox" },
+        "gender": { "type": "select", "enum": ["male", "female", "alien"] },
+        "submit": { "type": "submit" }
+      },
+      "command": {
+        'button1': { "type": 'button', "title": 'BUTTON1' },
+        'button2': { "type": 'button', "title": 'BUTTON2' },
+        'button3': { "type": 'button', "title": 'BUTTON3' },
+        'button4': { "type": 'button', "title": 'BUTTON4' },
+        'button5': { "type": 'button', "title": 'BUTTON5' }
+      }
+    });
+  });
+  </script>
+<div id="layout" hidden>
   <a href="#menu" id="menuLink" class="menu-link">
       <span></span>
   </a>
@@ -56,13 +64,13 @@
       <div class="pure-menu">
           <a class="pure-menu-heading" href="#company">Company</a>
           <ul class="pure-menu-list">
-              <li class="pure-menu-item"><a href="#home" class="pure-menu-link" onclick="showContent('home', this)">Home3</a></li>
+              <!-- <li class="pure-menu-item"><a href="#home" class="pure-menu-link" onclick="showContent('home', this)">Home3</a></li>
               <li class="pure-menu-item"><a href="#about" class="pure-menu-link" onclick="showContent('about', this)">About</a></li>
               <li class="pure-menu-item"><a href="#services" class="pure-menu-link" onclick="showContent('services', this)">Services</a></li>
-              <li class="pure-menu-item"><a href="#contact" class="pure-menu-link" onclick="showContent('contact', this)">Contact</a></li>
+              <li class="pure-menu-item"><a href="#contact" class="pure-menu-link" onclick="showContent('contact', this)">Contact</a></li> -->
           </ul>
       </div>
   </div>
-</div> -->
+</div>
 </body>
 </html>
