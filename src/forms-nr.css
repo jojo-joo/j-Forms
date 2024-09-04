@@ -124,6 +124,10 @@
     text-align: left;
     margin: 0.25em 1em 0.25em 0;
 }
+.pure-form-aligned .pure-control-group h1 {
+    flex: 1;
+    text-align: center;
+}
 .pure-form-aligned .pure-control-group input,
 .pure-form-aligned .pure-control-group button,
 .pure-form-aligned .pure-control-group select {

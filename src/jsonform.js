@@ -43,18 +43,7 @@
     evaluate: /\{\[([\s\S]+?)\]\}/g,
     interpolate: /\{\{([\s\S]+?)\}\}/g
   };
-
-  const defaults = (target, ...sources) => {
-    sources.forEach(source => {
-      Object.keys(source).forEach(key => {
-        if (target[key] === undefined) {
-          target[key] = source[key];
-        }
-      });
-    });
-    return target;
-  };
-
+  
   const clone = (value) => {
     if (Array.isArray(value)) {
       return [...value];
@@ -248,12 +237,8 @@
   };
 
   jsonform.elementTypes = {
-    'none': {
-      'template': ''
-    },
-    'root': {
-      template: (data) => `<div class="pure-form pure-form-aligned">${data.children}</div>`
-    },
+    'none': {'template': ''},
+    'root': {template: (data) => `<div class="pure-form pure-form-aligned"><div class="pure-control-group"><h1>sdf</h1></div>${data.children}</div>`},
     'text': inputFieldTemplate('text'),
     'password': inputFieldTemplate('password'),
     'date': inputFieldTemplate('date'),
@@ -2416,10 +2401,10 @@
    * @function
    * @param {Object} options The JSON Form object to use as basis for the form
    */
-  $.fn.jsonForm = function (options) {
+  $.fn.jsonForm = function (key, options) {
     var formElt = this;
 
-    options = defaults({}, options, { submitEvent: 'submit' });
+    //options = defaults({}, options, { submitEvent: 'submit' });
 
     var form = new formTree();
     form.initialize(options);
@@ -2447,8 +2432,6 @@
    * The second layer represents the controls contained within each form.
    */
   $.fn.jsonForms = function (forms) {
-    var bodyElt = this;
-
     /* only one tab, do not display any menu */
     if (Object.keys(forms).length > 1) {
       $('#layout').removeAttr('hidden');
@@ -2457,7 +2440,7 @@
     Object.keys(forms).forEach(key=>{
       this.append(`<div style="width:360px;" id="${key}" class="content"></div>`);
       $('.pure-menu-list').append(`<li class="pure-menu-item"><a href="#${key}" class="pure-menu-link" onclick="showContent(\'${key}\', this)">${key}</a></li>`);
-      $(`#${key}`).jsonForm({schema: forms[key]});
+      $(`#${key}`).jsonForm(key, {schema: forms[key]});
     });
   };
 
