@@ -719,7 +719,7 @@
       return formElement;
     };
     var formElement = getFormElement(formObject.form || [], key);
-    var schemaElement = getSchemaKey(formObject.schema.properties, key);
+    var schemaElement = getSchemaKey(formObject.schema, key);
 
     if (usePreviousValues && formObject.value) {
       // If values were previously submitted, use them directly if defined
@@ -1470,7 +1470,7 @@
     for (var i = 0; i < formArray.length; i++) {
       // Retrieve the key definition from the data schema
       var name = formArray[i].name;
-      var eltSchema = getSchemaKey(formSchema.properties, name);
+      var eltSchema = getSchemaKey(formSchema, name);
       var arrayMatch = null;
       var cval = null;
 
@@ -1875,11 +1875,11 @@
     this.formDesc.prefix = this.formDesc.prefix || 'jsonform-' + Date.now();
 
     // JSON schema shorthand
-    if (this.formDesc.schema && !this.formDesc.schema.properties) {
-      this.formDesc.schema = {
-        properties: this.formDesc.schema
-      };
-    }
+    // if (this.formDesc.schema && !this.formDesc.schema.properties) {
+    //   this.formDesc.schema = {
+    //     properties: this.formDesc.schema
+    //   };
+    // }
 
     this.formDesc.params = this.formDesc.params || {};
 
@@ -1905,7 +1905,7 @@
    * @function
    */
   formTree.prototype.buildTree = function () {
-    Object.keys(this.formDesc.schema.properties).forEach(key => {
+    Object.keys(this.formDesc.schema).forEach(key => {
       this.root.appendChild(this.buildFromLayout({key: key}));
     }, this);
   };
@@ -1947,7 +1947,7 @@
 
       // Retrieve the element from the JSON schema
       schemaElement = getSchemaKey(
-        this.formDesc.schema.properties,
+        this.formDesc.schema,
         formElement.key);
       if (!schemaElement) {
         // The JSON Form is invalid!
