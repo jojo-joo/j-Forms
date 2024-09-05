@@ -1536,8 +1536,8 @@
    *  node is inserted at the right position based on its "childPos" property.
    */
   formNode.prototype.render = function (el) {
-    var html = this.generate();
-    this.setContent(html, el);
+    var html = this.generate(); // template to html
+    this.setContent(html, el); // mount the html to the DOM
     this.enhance();
   };
 
@@ -2401,11 +2401,16 @@
       $('#layout').removeAttr('hidden');
     }
 
-    Object.keys(forms).forEach(key=>{
+    Object.keys(forms).forEach((key, index)=>{
       this.append(`<div style="width:360px;" id="${key}" class="content"></div>`);
       $('.pure-menu-list').append(`<li class="pure-menu-item"><a href="#${key}" class="pure-menu-link" onclick="showContent(\'${key}\', this)">${key}</a></li>`);
       $(`#${key}`).jsonForm(key, {schema: forms[key]});
     });
+
+    let firstKey = Object.keys(forms)[0];
+    if (firstKey) {
+      showContent(firstKey, null);
+    }
   };
 
   /**
