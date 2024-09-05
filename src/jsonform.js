@@ -29,14 +29,6 @@
   var reArray = /\[([0-9]*)\](?=\[|\.|$)/g;
 
   /**
-   * Template settings for form views
-   */
-  var fieldTemplateSettings = {
-    evaluate: /<%([\s\S]+?)%>/g,
-    interpolate: /<%=([\s\S]+?)%>/g
-  };
-
-  /**
    * Template settings for value replacement
    */
   var valueTemplateSettings = {
@@ -345,55 +337,9 @@
     }
   }).join(' ')}</select>`
     },
-    'checkboxes': {
-      'template': '<div><%= choiceshtml %></div>',
-      'onBeforeRender': function (data, node) {
-        // Build up choices from the enumeration list
-        var choices = null;
-        var choiceshtml = null;
-        var template = '<div class="checkbox"><label>' +
-          '<input type="checkbox" <% if (value) { %> checked="checked" <% } %> name="<%= name %>" value="1"' +
-          '<%= (node.disabled? " disabled" : "")%>' +
-          '/><%= title %></label></div>';
-        if (!node || !node.schemaElement) return;
-
-        if (node.schemaElement.items) {
-          choices =
-            node.schemaElement.items["enum"] ||
-            node.schemaElement.items[0]["enum"];
-        } else {
-          choices = node.schemaElement["enum"];
-        }
-        if (!choices) return;
-
-        choiceshtml = '';
-        choices.forEach((choice, idx) => {
-          choiceshtml += tmpl(template, fieldTemplateSettings)({
-            name: node.key + '[' + idx + ']',
-            value: node.value.includes(choice),
-            title: hasOwnProperty(node.formElement.titleMap, choice) ? node.formElement.titleMap[choice] : choice,
-            node: node
-          });
-        });
-
-        data.choiceshtml = choiceshtml;
-      }
-    },
-    'help': {
-      'template': '<span class="help-block" style="padding-top:5px"><%= elt.helpvalue %></span>',
-    },
-    'msg': {
-      'template': '<%= elt.msg %>'
-    },
-    'submit': {
-      template : (data) => `<input type="submit" ${data.id ? `id="${data.id}"` : ''} class="button-success  pure-button ${data.elt.htmlClass || ""}" value="${data.value || data.node.title}" ${data.node.disabled ? 'disabled' : ''} />`
-    },
-    'button': {
-      template :(data) => `<button type="button" ${data.id ? `id="${data.id}"` : ''} class="button-secondary pure-button ${data.elt.htmlClass ? data.elt.htmlClass : ''}">${data.node.title}</button>`
-    },
-    'actions': {
-      template : (data) => `<div class="${data.elt.htmlClass || ""}">${data.children}</div>`
-    },
+    'submit': {template : (data) => `<div class="pure-control-group"><input type="submit" ${data.id ? `id="${data.id}"` : ''} class="button-success  pure-button ${data.elt.htmlClass || ""}" value="${data.value || data.node.title}" ${data.node.disabled ? 'disabled' : ''} /></div>`},
+    'button': {template :(data) => `<button type="button" ${data.id ? `id="${data.id}"` : ''} class="button-secondary pure-button ${data.elt.htmlClass ? data.elt.htmlClass : ''}">${data.node.title}</button>`},
+    'actions': {template : (data) => `<div class="${data.elt.htmlClass || ""}">${data.children}</div>`},
     'hidden': {
       'template': '<input type="hidden" id="<%= id %>" name="<%= node.name %>" value="<%= escape(value) %>" />'
     }
@@ -2367,6 +2313,7 @@
   $.fn.jsonForm = function (key, options) {
     var formElt = this;
     options.title = options.schema.title || key;
+    options.submitEvent = 'submit';
 
     //options = defaults({}, options, { submitEvent: 'submit' });
 
@@ -2402,7 +2349,7 @@
     }
 
     Object.keys(forms).forEach((key, index)=>{
-      this.append(`<div style="width:360px;" id="${key}" class="content"></div>`);
+      this.append(`<form style="width:360px;" id="${key}" class="content"></form>`);
       $('.pure-menu-list').append(`<li class="pure-menu-item"><a href="#${key}" class="pure-menu-link" onclick="showContent(\'${key}\', this)">${key}</a></li>`);
       $(`#${key}`).jsonForm(key, {schema: forms[key]});
     });
