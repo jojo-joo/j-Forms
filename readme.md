@@ -9,6 +9,9 @@
 - [pure-css](https://github.com/pure-css/pure/) A set of small, responsive CSS modules that you can use in every web project.
 - [jsonform](https://github.com/jsonform/jsonform) The JSON Form library is a JavaScript client-side library that takes a structured data model defined using JSON Schema as input and returns a Bootstrap 3-friendly HTML form that matches the schema.
 - [zepto](https://github.com/madrobby/zepto) Zepto is a minimalist JavaScript library for modern browsers with a largely jQuery-compatible API. If you use jQuery, you already know how to use Zepto.
+- [jsonforms](https://github.com/eclipse[source/jsonforms) Customizable JSON Schema-based forms with React, Angular and Vue support out of the box.
+- [formily](https://github.com/alibaba/formily) Cross Device & High Performance Normal Form/Dynamic(JSON Schema) Form/Form Builder -- Support React/React Native/Vue 2/Vue 3
+
 ### Performance
 - the whole footprint (including css/html/javascript/schema/server) size is should not greater than 100kB which is suitable for most modern mcu flash size.
 - all the web files are packed into one single html file to improve the network performance

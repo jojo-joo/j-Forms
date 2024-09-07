@@ -1820,24 +1820,13 @@
     //this.root.view = jsonform.elementTypes['root'].template(this.root);
 
     // Generate the tree from the form description
-    this.buildTree();
+    Object.keys(this.formDesc.schema).forEach(key => {
+      this.root.appendChild(this.buildFromLayout({key: key}));
+    });
 
     // Compute the values associated with each node
     // (for arrays, the computation actually creates the form nodes)
     this.computeInitialValues();
-  };
-
-  /**
-   * Constructs the tree from the form description.
-   *
-   * The function must be called once when the tree is first created.
-   *
-   * @function
-   */
-  formTree.prototype.buildTree = function () {
-    Object.keys(this.formDesc.schema).forEach(key => {
-      this.root.appendChild(this.buildFromLayout({key: key}));
-    });
   };
 
   /**
@@ -1852,11 +1841,10 @@
    * @param {Object} context The parsing context (the array depth in particular)
    * @return {Object} The node that matches the element.
    */
-  formTree.prototype.buildFromLayout = function (formElement, context) {
+  formTree.prototype.buildFromLayout = function (formElement) {
     var schemaElement = null;
     var node = new formNode();
     var view = null;
-    var key = null;
 
     // The form element parameter directly comes from the initial
     // JSONForm object. We'll make a shallow copy of it and of its children
