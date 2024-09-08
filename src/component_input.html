@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="./forms-nr.css" />
+  <link rel="stylesheet" type="text/css" href="menu.css">
+</style>
+</head>
+<body>
+  <script type="text/javascript" src="zepto.min.js"></script>
+  <script type="text/javascript" src="jsonform.js"></script>
+  <script type="text/javascript">
+  $(document).ready(function () {
+    $('body').jsonForm({
+      "form": {
+        "style": "default"
+      },
+      "schema": {
+        "type": "object",
+        "properties": {
+          "component_input": {
+            "type": "string",
+            "title": "Input",
+            "x-component": "Input",
+            "x-validator": [],
+            "x-index": 0
+          }
+        }
+      }
+    });
+  });
+  </script>
+</body>
+</html>

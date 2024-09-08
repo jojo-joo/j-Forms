@@ -4,8 +4,9 @@
 ### Full Compatiable with JSON Schema
 Considering that formily is full compatiable with the standard JSON schema , we implement a Minimalist Design of the formily which can reduce our design works.
 #### unsupported components
-for pure-css is light, not too many types of UI components, we have to discard some components which formily supported:
-Rate/TreeSelect/Cascader/Transfer/
+for pure-css is light, not too many types of UI components, we have to discard some components which formily supported, and neccessary supported components are:
+input/TextArea/Password/Slider/Select/Checkbox/Radio/DatePicker/TimerPicker/Upload/Switch/Object/Card/Tabs/Collapse/ArrayCards/ArrayTable/Text
+
 ### Easy to use
 - one json schema, build the whole web portal including frontend & backend & protocol.
 - only one include file which is required for C language.
@@ -43,12 +44,9 @@ To provide embedded engineers with a solution that is tidy, fast, simple, and ro
 - 0.2.00 can runs on esp32 arduino.
 - 0.3.00 can runs on stm32.
 - 0.4.00 support materia style.
-- 0.5.00 support bootstrap style.
-- 0.6.00 support client side verify.
-- 0.7.00 support server side verify.
-- 0.8.00 support json schema sanity check.
-- 0.9.00 fix issues, full test, full ci, prepare for 1.0.00 release.
-
+- 0.5.00 support schema/client/server side verify.
+- 0.6.00 full test, full ci
+  
 ## Restriction
 - consider the key length in embeded system is no greater than 16 generally, jform set the maximun key size to  16
 - to simplify the json syntax,  Represent different forms using JSON array. for each key/value pair in json, if the value is an object, it is a control, if the value is an array, it is a tab.
