@@ -1,6 +1,10 @@
 # json based webui generator for MCU
 
 ## Features
+### Full Compatiable with JSON Schema
+### Minimalist Design
+supported component:
+- 
 ### Easy to use
 - one json schema, build the whole web portal including frontend & backend & protocol.
 - only one include file which is required for C language.
