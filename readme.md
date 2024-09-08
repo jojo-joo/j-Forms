@@ -2,9 +2,10 @@
 
 ## Features
 ### Full Compatiable with JSON Schema
-### Minimalist Design
-supported component:
-- 
+Considering that formily is full compatiable with the standard JSON schema , we implement a Minimalist Design of the formily which can reduce our design works.
+#### unsupported components
+for pure-css is light, not too many types of UI components, we have to discard some components which formily supported:
+Rate/TreeSelect/Cascader/Transfer/
 ### Easy to use
 - one json schema, build the whole web portal including frontend & backend & protocol.
 - only one include file which is required for C language.

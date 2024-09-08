@@ -1821,7 +1821,7 @@
 
     // Generate the tree from the form description
     Object.keys(this.formDesc.schema).forEach(key => {
-      this.root.appendChild(this.buildFromLayout({key: key}));
+      this.root.appendChild(this.createNode({key: key}));
     });
 
     // Compute the values associated with each node
@@ -1841,7 +1841,7 @@
    * @param {Object} context The parsing context (the array depth in particular)
    * @return {Object} The node that matches the element.
    */
-  formTree.prototype.buildFromLayout = function (formElement) {
+  formTree.prototype.createNode = function (formElement) {
     var schemaElement = null;
     var node = new formNode();
     var view = null;
@@ -1986,7 +1986,7 @@
       // input field per child property of the object in the JSON schema
       if (schemaElement.type === 'object') {
         schemaElement.properties.forEach((prop, propName) => {
-          node.appendChild(this.buildFromLayout({
+          node.appendChild(this.createNode({
             key: formElement.key + '.' + propName
           }));
         }, this);
