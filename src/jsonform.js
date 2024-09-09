@@ -230,7 +230,7 @@
 
   jsonform.elementTypes = {
     'none': {'template': ''},
-    'root': {template: (data) => `<div class="pure-form pure-form-aligned"><div class="pure-control-group"><h1>${data.title}</h1></div>${data.children}</div>`},
+    'Root': {template: (data) => `<div class="pure-form pure-form-aligned">${data.children}</div>`},
     'text': inputFieldTemplate('text'),
     'password': inputFieldTemplate('password'),
     'date': inputFieldTemplate('date'),
@@ -1801,7 +1801,7 @@
     this.formDesc = clone(formDesc);
 
     // Compute form prefix if no prefix is given.
-    this.formDesc.prefix = this.formDesc.prefix || 'jsonform-' + Date.now();
+    // this.formDesc.prefix = this.formDesc.prefix || 'jsonform-' + Date.now();
 
     // JSON schema shorthand
     // if (this.formDesc.schema && !this.formDesc.schema.properties) {
@@ -1810,7 +1810,7 @@
     //   };
     // }
 
-    this.formDesc.params = this.formDesc.params || {};
+    // this.formDesc.params = this.formDesc.params || {};
 
     // Create the root of the tree
     this.root = new formNode();
@@ -2300,10 +2300,7 @@
    */
   $.fn.jsonForm = function (key, options) {
     var formElt = this;
-    options.title = options.schema.title || key;
     options.submitEvent = 'submit';
-
-    //options = defaults({}, options, { submitEvent: 'submit' });
 
     var form = new formTree();
     form.initialize(options);
