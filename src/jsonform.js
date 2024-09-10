@@ -1,41 +1,4 @@
-/* Copyright (c) 2012 Joshfire - MIT license */
-/**
- * @fileoverview Core of the JSON Form client-side library.
- *
- * Generates an HTML form from a structured data model and a layout description.
- *
- * The library may also validate inputs entered by the user against the data model
- * upon form submission and create the structured data object initialized with the
- * values that were submitted.
- *
- * The library depends on:
- *  - jQuery
- *  - the underscore library. not neccesary in modern browsers, discarded.
- *  - a JSON parser/serializer. Nothing to worry about in modern browsers.
- *  - the JSONFormValidation library (in jsv.js) for validation purpose
- *
- * See documentation at:
- * http://developer.joshfire.com/doc/dev/ref/jsonform
- *
- * The library creates and maintains an internal data tree along with the DOM.
- * That structure is necessary to handle arrays (and nested arrays!) that are
- * dynamic by essence.
- */
-
 (function ($) {
-  /**
-   * Regular expressions used to extract array indexes in input field names
-   */
-  var reArray = /\[([0-9]*)\](?=\[|\.|$)/g;
-
-  /**
-   * Template settings for value replacement
-   */
-  var valueTemplateSettings = {
-    evaluate: /\{\[([\s\S]+?)\]\}/g,
-    interpolate: /\{\{([\s\S]+?)\}\}/g
-  };
-
   const clone = (value) => {
     if (Array.isArray(value)) {
       return [...value];
@@ -56,86 +19,6 @@
     }
     
   };
-
-  (function() {
-    var _ = {};
-
-    this.templateSettings = {
-        evaluate: /<%([\s\S]+?)%>/g,
-        interpolate: /<%=([\s\S]+?)%>/g
-    };
-    
-    var noMatch = /(.)^/;
-    
-    var escapes = {
-        "'": "'",
-        '\\': '\\',
-        '\r': 'r',
-        '\n': 'n',
-        '\u2028': 'u2028',
-        '\u2029': 'u2029'
-    };
-    
-    var escapeRegExp = /\\|'|\r|\n|\u2028|\u2029/g;
-    
-    var escapeChar = function(match) {
-        return '\\' + escapes[match];
-    };
-    
-    this.tmpl = function(text, settings) {
-    
-        settings = Object.assign({}, this.templateSettings, settings);
-    
-        var matcher = RegExp([
-            (settings.escape || noMatch).source,
-            (settings.interpolate || noMatch).source,
-            (settings.evaluate || noMatch).source
-        ].join('|') + '|$', 'g');
-    
-        var index = 0;
-        var source = "__p+='";
-        text.replace(matcher, function(match, escape, interpolate, evaluate, offset) {
-    
-            source += text.slice(index, offset).replace(escapeRegExp, escapeChar);
-    
-            index = offset + match.length;
-    
-            if (escape) {
-                source += "'+\n((__t=(" + escape + "))==null?'':escape(__t))+\n'";
-            } else if (interpolate) {
-                source += "'+\n((__t=(" + interpolate + "))==null?'':__t)+\n'";
-            } else if (evaluate) {
-                source += "';\n" + evaluate + "\n__p+='";
-            }
-    
-            return match;
-        });
-        source += "';\n";
-    
-        if (!settings.variable) source = 'with(obj||{}){\n' + source + '}\n';
-    
-        source = "var __t,__p='',__j=Array.prototype.join," +
-            "print=function(){__p+=__j.call(arguments,'');};\n" +
-            source + 'return __p;\n';
-    
-        var render;
-        try {
-            render = new Function(settings.variable || 'obj', '_', source);
-        } catch (e) {
-            e.source = source;
-            throw e;
-        }
-    
-        var template = function(data) {
-            return render.call(this, data, _);
-        };
-    
-        var argument = settings.variable || 'obj';
-        template.source = 'function(' + argument + '){\n' + source + '}';
-    
-        return template;
-    };
-})();
   
   /**
    * Returns true if given value is neither "undefined" nor null
@@ -145,34 +28,9 @@
   };
 
   /**
-   * Returns true if given property is directly property of an object
-   */
-  var hasOwnProperty = function (obj, prop) {
-    return typeof obj === 'object' && obj.hasOwnProperty(prop);
-  }
-
-  /**
    * The jsonform object whose methods will be exposed to the window object
    */
   var jsonform = { util: {} };
-
-  // From backbonejs
-  var escapeHTML = function (string) {
-    if (!isSet(string)) {
-      return '';
-    }
-    string = '' + string;
-    if (!string) {
-      return '';
-    }
-    return string
-      .replace(/&(?!\w+;|#\d+;|#x[\da-f]+;)/gi, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#x27;')
-      .replace(/\//g, '&#x2F;');
-  };
 
   /**
    * Escapes selector name for use with jQuery
@@ -201,22 +59,6 @@
     return str.replace(/\ /g, '_');
   }
 
-  // pure-css friendly HTML boilerplate for standard inputs
-  jsonform.fieldTemplate = (inner, elt, node) => {
-    const metaData = elt && elt.htmlMetaData ? elt.htmlMetaData : {};
-    const metaDataAttrs = Object.keys(metaData).map(key => `${key}="${metaData[key]}"`).join(' ');
-    const classList = `pure-control-group ${node.schemaElement && node.schemaElement.required && (node.schemaElement.type !== "boolean") ? "jsonform-required" : ""} ${node.readOnly ? "jsonform-readonly" : ""} ${node.disabled ? "jsonform-disabled" : ""}`;
-    const label = node.title ? node.title : node.name;
-    const description = node.description ? `<span class="help-block">${node.description}</span>` : '';
-  
-    return `<div ${metaDataAttrs} class="${classList}">
-      ${elt && elt.notitle ? '' : `<label for="${node.id}">${label}</label>`}
-      ${inner}
-      ${description}
-      <span class="help-block jsonform-errortext" style="display:none;"></span>
-    </div>`;
-  };
-
   var inputFieldTemplate = function (type) {
     return {
       template: (node) => `<div class="pure-control-group"><label>${node.title}</label><input type="${type}" name="${node.name}" /></div>`,
@@ -224,7 +66,7 @@
   };
 
   jsonform.elementTypes = {
-    'none': {'template': ''},
+    'None': {'template': ''},
     'Root': {'template': (node) => `<div class="pure-form pure-form-aligned">${node.children_html}</div>`},
     'Input': inputFieldTemplate('text'),
     'password': inputFieldTemplate('password'),
@@ -291,21 +133,6 @@
         }
       }
     },
-    'color': { /* not supported any more */
-      'template': '<input type="text" ' +
-        '<%= (fieldHtmlClass ? "class=\'" + fieldHtmlClass + "\' " : "") %>' +
-        'name="<%= node.name %>" value="<%= escape(value) %>" id="<%= id %>"' +
-        ' aria-label="<%= node.title ? escape(node.title) : node.name %>"' +
-        '<%= (node.disabled? " disabled" : "")%>' +
-        '<%= (node.schemaElement && node.schemaElement.required ? " required=\'required\'" : "") %>' +
-        ' />',
-      'onInsert': function (evt, node) {
-        $(node.el).find('#' + escapeSelector(node.id)).spectrum({
-          preferredFormat: "hex",
-          showInput: true
-        });
-      }
-    },
     'checkbox': {
       template : (data) => `<div class="checkbox"><label class="toggle-switch"><input type="checkbox" id="${data.id}" name="${data.node.name}" value="1" ${data.value ? 'checked' : ''} ${data.node.disabled ? 'disabled' : ''} ${data.node.schemaElement && data.node.schemaElement.required && (data.node.schemaElement.type !== "boolean") ? 'required="required"' : ''} /> ${data.node.inlinetitle || ""}<div class="slider"></div></label></div>`,
       'getElement': function (el) {
@@ -339,246 +166,6 @@
       'template': '<input type="hidden" id="<%= id %>" name="<%= node.name %>" value="<%= escape(value) %>" />'
     }
   };
-
-
-  //Allow to access subproperties by splitting "."
-  /**
-   * Retrieves the key identified by a path selector in the structured object.
-   *
-   * Levels in the path are separated by a dot. Array items are marked
-   * with [x]. For instance:
-   *  foo.bar[3].baz
-   *
-   * @function
-   * @param {Object} obj Structured object to parse
-   * @param {String} key Path to the key to retrieve
-   * @param {boolean} ignoreArrays True to use first element in an array when
-   *   stucked on a property. This parameter is basically only useful when
-   *   parsing a JSON schema for which the "items" property may either be an
-   *   object or an array with one object (only one because JSON form does not
-   *   support mix of items for arrays).
-   * @return {Object} The key's value.
-   */
-  jsonform.util.getObjKey = function (obj, key, ignoreArrays) {
-    var innerobj = obj;
-    var keyparts = key.split(".");
-    var subkey = null;
-    var arrayMatch = null;
-    var prop = null;
-
-    for (var i = 0; i < keyparts.length; i++) {
-      if ((innerobj === null) || (typeof innerobj !== "object")) return null;
-      subkey = keyparts[i];
-      prop = subkey.replace(reArray, '');
-      reArray.lastIndex = 0;
-      arrayMatch = reArray.exec(subkey);
-      if (arrayMatch) {
-        while (true) {
-          if (prop && !Array.isArray(innerobj[prop])) return null;
-          innerobj = prop ? innerobj[prop][parseInt(arrayMatch[1])] : innerobj[parseInt(arrayMatch[1])];
-          arrayMatch = reArray.exec(subkey);
-          if (!arrayMatch) break;
-          // In the case of multidimensional arrays,
-          // we should not take innerobj[prop][0] anymore,
-          // but innerobj[0] directly
-          prop = null;
-        }
-      } else if (ignoreArrays &&
-        !innerobj[prop] &&
-        Array.isArray(innerobj) &&
-        innerobj[0]) {
-        innerobj = innerobj[0][prop];
-      } else {
-        innerobj = innerobj[prop];
-      }
-    }
-
-    if (ignoreArrays && Array.isArray(innerobj) && innerobj[0]) {
-      return innerobj[0];
-    } else {
-      return innerobj;
-    }
-  };
-
-
-  /**
-   * Sets the key identified by a path selector to the given value.
-   *
-   * Levels in the path are separated by a dot. Array items are marked
-   * with [x]. For instance:
-   *  foo.bar[3].baz
-   *
-   * The hierarchy is automatically created if it does not exist yet.
-   *
-   * @function
-   * @param {Object} obj The object to build
-   * @param {String} key The path to the key to set where each level
-   *  is separated by a dot, and array items are flagged with [x].
-   * @param {Object} value The value to set, may be of any type.
-   */
-  jsonform.util.setObjKey = function (obj, key, value) {
-    var innerobj = obj;
-    var keyparts = key.split(".");
-    var subkey = null;
-    var arrayMatch = null;
-    var prop = null;
-
-    for (var i = 0; i < keyparts.length - 1; i++) {
-      subkey = keyparts[i];
-      prop = subkey.replace(reArray, '');
-      reArray.lastIndex = 0;
-      arrayMatch = reArray.exec(subkey);
-      if (arrayMatch) {
-        // Subkey is part of an array
-        while (true) {
-          if (!Array.isArray(innerobj[prop])) {
-            innerobj[prop] = [];
-          }
-          innerobj = innerobj[prop];
-          prop = parseInt(arrayMatch[1], 10);
-          arrayMatch = reArray.exec(subkey);
-          if (!arrayMatch) break;
-        }
-        if ((typeof innerobj[prop] !== 'object') ||
-          (innerobj[prop] === null)) {
-          innerobj[prop] = {};
-        }
-        innerobj = innerobj[prop];
-      }
-      else {
-        // "Normal" subkey
-        if ((typeof innerobj[prop] !== 'object') ||
-          (innerobj[prop] === null)) {
-          innerobj[prop] = {};
-        }
-        innerobj = innerobj[prop];
-      }
-    }
-
-    // Set the final value
-    subkey = keyparts[keyparts.length - 1];
-    prop = subkey.replace(reArray, '');
-    reArray.lastIndex = 0;
-    arrayMatch = reArray.exec(subkey);
-    if (arrayMatch) {
-      while (true) {
-        if (!Array.isArray(innerobj[prop])) {
-          innerobj[prop] = [];
-        }
-        innerobj = innerobj[prop];
-        prop = parseInt(arrayMatch[1], 10);
-        arrayMatch = reArray.exec(subkey);
-        if (!arrayMatch) break;
-      }
-      innerobj[prop] = value;
-    }
-    else {
-      innerobj[prop] = value;
-    }
-  };
-
-
-  /**
-   * Retrieves the key definition from the given schema.
-   *
-   * The key is identified by the path that leads to the key in the
-   * structured object that the schema would generate. Each level is
-   * separated by a '.'. Array levels are marked with []. For instance:
-   *  foo.bar[].baz
-   * ... to retrieve the definition of the key at the following location
-   * in the JSON schema (using a dotted path notation):
-   *  foo.properties.bar.items.properties.baz
-   *
-   * @function
-   * @param {Object} schema The JSON schema to retrieve the key from
-   * @param {String} key The path to the key, each level being separated
-   *  by a dot and array items being flagged with [].
-   * @return {Object} The key definition in the schema, null if not found.
-   */
-  var getSchemaKey = function (schema, key) {
-    var schemaKey = key
-      .replace(/\./g, '.properties.')
-      .replace(/\[[0-9]*\]/g, '.items');
-    var schemaDef = jsonform.util.getObjKey(schema, schemaKey, true);
-    if (schemaDef && schemaDef.$ref) {
-      throw new Error('JSONForm does not yet support schemas that use the ' +
-        '$ref keyword. See: https://github.com/joshfire/jsonform/issues/54');
-    }
-    return schemaDef;
-  };
-
-
-  /**
-   * Truncates the key path to the requested depth.
-   *
-   * For instance, if the key path is:
-   *  foo.bar[].baz.toto[].truc[].bidule
-   * and the requested depth is 1, the returned key will be:
-   *  foo.bar[].baz.toto
-   *
-   * Note the function includes the path up to the next depth level.
-   *
-   * @function
-   * @param {String} key The path to the key in the schema, each level being
-   *  separated by a dot and array items being flagged with [].
-   * @param {Number} depth The array depth
-   * @return {String} The path to the key truncated to the given depth.
-   */
-  var truncateToArrayDepth = function (key, arrayDepth) {
-    var depth = 0;
-    var pos = 0;
-    if (!key) return null;
-
-    if (arrayDepth > 0) {
-      while (depth < arrayDepth) {
-        pos = key.indexOf('[]', pos);
-        if (pos === -1) {
-          // Key path is not "deep" enough, simply return the full key
-          return key;
-        }
-        pos = pos + 2;
-        depth += 1;
-      }
-    }
-
-    // Move one step further to the right without including the final []
-    pos = key.indexOf('[]', pos);
-    if (pos === -1) return key;
-    else return key.substring(0, pos);
-  };
-
-  /**
-   * Applies the array path to the key path.
-   *
-   * For instance, if the key path is:
-   *  foo.bar[].baz.toto[].truc[].bidule
-   * and the arrayPath [4, 2], the returned key will be:
-   *  foo.bar[4].baz.toto[2].truc[].bidule
-   *
-   * @function
-   * @param {String} key The path to the key in the schema, each level being
-   *  separated by a dot and array items being flagged with [].
-   * @param {Array(Number)} arrayPath The array path to apply, e.g. [4, 2]
-   * @return {String} The path to the key that matches the array path.
-   */
-  var applyArrayPath = function (key, arrayPath) {
-    var depth = 0;
-    if (!key) return null;
-    if (!arrayPath || (arrayPath.length === 0)) return key;
-    var newKey = key.replace(reArray, function (str, p1) {
-      // Note this function gets called as many times as there are [x] in the ID,
-      // from left to right in the string. The goal is to replace the [x] with
-      // the appropriate index in the new array path, if defined.
-      var newIndex = str;
-      if (isSet(arrayPath[depth])) {
-        newIndex = '[' + arrayPath[depth] + ']';
-      }
-      depth += 1;
-      return newIndex;
-    });
-    return newKey;
-  };
-
 
   /**
    * Returns the initial value that a field identified by its key
@@ -674,16 +261,16 @@
           /\{\{values\.([^\}]+)\}\}/g,
           '{{getValue("$1")}}');
       }
-      if (value) {
-        value = tmpl(value, valueTemplateSettings)(tpldata);
-      }
+      // if (value) {
+      //   value = tmpl(value, valueTemplateSettings)(tpldata);
+      // }
     }
 
     // TODO: handle on the formElement.options, because user can setup it too.
     // Apply titleMap if needed
-    if (isSet(value) && formElement && hasOwnProperty(formElement.titleMap, value)) {
-      value = tmpl(formElement.titleMap[value], valueTemplateSettings)(tpldata);
-    }
+    // if (isSet(value) && formElement && hasOwnProperty(formElement.titleMap, value)) {
+    //   value = tmpl(formElement.titleMap[value], valueTemplateSettings)(tpldata);
+    // }
 
     // Check maximum length of a string
     if (value && typeof (value) === 'string' &&
@@ -855,16 +442,6 @@
     return !!child;
   };
 
-
-  /**
-   * Attaches a child node to the current node.
-   *
-   * The child node is appended to the end of the list.
-   *
-   * @function
-   * @param {formNode} node The child node to append
-   * @return {formNode} The inserted node (same as the one given as parameter)
-   */
   formNode.prototype.appendChild = function (node) {
     node.parentNode = this;
     node.childPos = this.children.length;
@@ -1006,366 +583,6 @@
     node.parentNode = this;
   };
 
-
-  /**
-   * Recursively sets values to all nodes of the current subtree
-   * based on previously submitted values, or based on default
-   * values when the submitted values are not enough
-   *
-   * The function should be called once in the lifetime of a node
-   * in the tree. It expects its parent's arrayPath to be up to date.
-   *
-   * Three cases may arise:
-   * 1. if the form element is a simple input field, the value is
-   * extracted from previously submitted values of from default values
-   * defined in the schema.
-   * 2. if the form element is an array-like node, the child template
-   * is used to create as many children as possible (and at least one).
-   * 3. the function simply recurses down the node's subtree otherwise
-   * (this happens when the form element is a fieldset-like element).
-   *
-   * @function
-   * @param {Object} values Previously submitted values for the form
-   * @param {Boolean} ignoreDefaultValues Ignore default values defined in the
-   *  schema when set.
-   */
-  formNode.prototype.computeInitialValues = function (values, ignoreDefaultValues) {
-    var self = this;
-    var node = null;
-    var nbChildren = 1;
-    var i = 0;
-    var formData = this.ownerTree.formDesc.tpldata || {};
-
-    // Propagate the array path from the parent node
-    // (adding the position of the child for nodes that are direct
-    // children of array-like nodes)
-    if (this.parentNode) {
-      this.arrayPath = clone(this.parentNode.arrayPath);
-      if (this.parentNode.view && this.parentNode.view.array) {
-        this.arrayPath.push(this.childPos);
-      }
-    }
-    else {
-      this.arrayPath = [];
-    }
-
-    // Prepare special data param "idx" for templated values
-    // (is is the index of the child in its wrapping array, starting
-    // at 1 since that's more human-friendly than a zero-based index)
-    formData.idx = (this.arrayPath.length > 0) ?
-      this.arrayPath[this.arrayPath.length - 1] + 1 :
-      this.childPos + 1;
-
-    // Prepare special data param "value" for templated values
-    formData.value = '';
-
-    // Prepare special function to compute the value of another field
-    formData.getValue = function (key) {
-      if (!values) {
-        return '';
-      }
-      var returnValue = values;
-      var listKey = key.split('[].');
-      var i;
-      for (i = 0; i < listKey.length - 1; i++) {
-        returnValue = returnValue[listKey[i]][self.arrayPath[i]];
-      }
-      return returnValue[listKey[i]];
-    };
-
-    if (this.formElement) {
-      // Compute the ID of the field (if needed)
-      if (this.formElement.id) {
-        this.id = applyArrayPath(this.formElement.id, this.arrayPath);
-      }
-      else if (this.view && this.view.array) {
-        this.id = escapeSelector(this.ownerTree.formDesc.prefix) +
-          '-elt-counter-' + Date.now();
-      }
-      else if (this.parentNode && this.parentNode.view &&
-        this.parentNode.view.array) {
-        // Array items need an array to associate the right DOM element
-        // to the form node when the parent is rendered.
-        this.id = escapeSelector(this.ownerTree.formDesc.prefix) +
-          '-elt-counter-' + Date.now();
-      }
-      else if ((this.formElement.type === 'button') ||
-        (this.formElement.type === 'selectfieldset') ||
-        (this.formElement.type === 'question') ||
-        (this.formElement.type === 'buttonquestion')) {
-        // Buttons do need an id for "onClick" purpose
-        this.id = escapeSelector(this.ownerTree.formDesc.prefix) +
-          '-elt-counter-' + Date.now();
-      }
-
-      // Compute the actual key (the form element's key is index-free,
-      // i.e. it looks like foo[].bar.baz[].truc, so we need to apply
-      // the array path of the node to get foo[4].bar.baz[2].truc)
-      if (this.formElement.key) {
-        this.key = applyArrayPath(this.formElement.key, this.arrayPath);
-        this.keydash = slugify(this.key.replace(/\./g, '---'));
-      }
-
-      // Same idea for the field's name
-      this.name = applyArrayPath(this.formElement.name, this.arrayPath);
-
-      // Consider that label values are template values and apply the
-      // form's data appropriately (note we also apply the array path
-      // although that probably doesn't make much sense for labels...)
-      [
-        'title',
-        'legend',
-        'description',
-        'append',
-        'prepend',
-        'inlinetitle',
-        'helpvalue',
-        'value',
-        'disabled',
-        'placeholder',
-        'readOnly'
-      ].forEach(prop => {
-        if (typeof (this.formElement[prop]) === 'string') {
-          if (this.formElement[prop].indexOf('{{values.') !== -1) {
-            // This label wants to use the value of another input field.
-            // Convert that construct into {{jsonform.getValue(key)}} for
-            // Underscore to call the appropriate function of formData
-            // when template gets called (note calling a function is not
-            // exactly Mustache-friendly but is supported by Underscore).
-            this[prop] = this.formElement[prop].replace(
-              /\{\{values\.([^\}]+)\}\}/g,
-              '{{getValue("$1")}}');
-          }
-          else {
-            // Note applying the array path probably doesn't make any sense,
-            // but some geek might want to have a label "foo[].bar[].baz",
-            // with the [] replaced by the appropriate array path.
-            this[prop] = applyArrayPath(this.formElement[prop], this.arrayPath);
-          }
-          if (this[prop]) {
-            this[prop] = tmpl(this[prop], valueTemplateSettings)(formData);
-          }
-        }
-        else {
-          this[prop] = this.formElement[prop];
-        }
-      }, this);
-
-      // Apply templating to options created with "titleMap" as well
-      if (this.formElement.options) {
-        this.options = this.formElement.options.map(option => {
-          var title = null;
-          if (typeof option === 'object' && option.title) {
-            // See a few lines above for more details about templating
-            // preparation here.
-            if (option.title.indexOf('{{values.') !== -1) {
-              title = option.title.replace(
-                /\{\{values\.([^\}]+)\}\}/g,
-                '{{getValue("$1")}}');
-            }
-            else {
-              title = applyArrayPath(option.title, self.arrayPath);
-            }
-            return Object.assign({}, option, {
-              value: (isSet(option.value) ? option.value : ''),
-              title: tmpl(title, valueTemplateSettings)(formData)
-            });
-          }
-          else {
-            return option;
-          }
-        });
-      }
-    }
-
-    if (this.view && this.schemaElement) {
-      // Case 1: simple input field
-      if (values) {
-        // Form has already been submitted, use former value if defined.
-        // Note we won't set the field to its default value otherwise
-        // (since the user has already rejected it)
-        if (isSet(jsonform.util.getObjKey(values, this.key))) {
-          this.value = jsonform.util.getObjKey(values, this.key);
-        } else if (isSet(this.schemaElement['default'])) {
-          // the value is not provided in the values section but the
-          // default is set in the schemaElement (which we have)
-          this.value = this.schemaElement['default']
-          // We only apply a template if it's a string
-          if (typeof this.value === 'string') {
-            this.value = tmpl(this.value, valueTemplateSettings)(formData);
-          }
-
-        }
-      }
-      else if (!ignoreDefaultValues) {
-        // No previously submitted form result, use default value
-        // defined in the schema if it's available and not already
-        // defined in the form element
-        if (!isSet(this.value) && isSet(this.schemaElement['default'])) {
-          this.value = this.schemaElement['default'];
-          if (typeof this.value === 'string') {
-            if (this.value.indexOf('{{values.') !== -1) {
-              // This label wants to use the value of another input field.
-              // Convert that construct into {{jsonform.getValue(key)}} for
-              // Underscore to call the appropriate function of formData
-              // when template gets called (note calling a function is not
-              // exactly Mustache-friendly but is supported by Underscore).
-              this.value = this.value.replace(
-                /\{\{values\.([^\}]+)\}\}/g,
-                '{{getValue("$1")}}');
-            }
-            else {
-              // Note applying the array path probably doesn't make any sense,
-              // but some geek might want to have a label "foo[].bar[].baz",
-              // with the [] replaced by the appropriate array path.
-              this.value = applyArrayPath(this.value, this.arrayPath);
-            }
-            if (this.value) {
-              this.value = tmpl(this.value, valueTemplateSettings)(formData);
-            }
-          }
-          this.defaultValue = true;
-        }
-      }
-    }
-    else if (this.view && this.view.array) {
-      // Case 2: array-like node
-      nbChildren = 0;
-      if (values) {
-        nbChildren = this.getPreviousNumberOfItems(values, this.arrayPath);
-      }
-      // TODO: use default values at the array level when form has not been
-      // submitted before. Note it's not that easy because each value may
-      // be a complex structure that needs to be pushed down the subtree.
-      // The easiest way is probably to generate a "values" object and
-      // compute initial values from that object
-      /*
-      else if (this.schemaElement['default']) {
-        nbChildren = this.schemaElement['default'].length;
-      }
-      */
-      else if (nbChildren === 0) {
-        // If form has already been submitted with no children, the array
-        // needs to be rendered without children. If there are no previously
-        // submitted values, the array gets rendered with one empty item as
-        // it's more natural from a user experience perspective. That item can
-        // be removed with a click on the "-" button.
-        nbChildren = 1;
-      }
-      for (i = 0; i < nbChildren; i++) {
-        this.appendChild(this.childTemplate.clone());
-      }
-    }
-
-    // Case 3 and in any case: recurse through the list of children
-    this.children.forEach(child => {
-      child.computeInitialValues(values, ignoreDefaultValues);
-    });
-
-    // If the node's value is to be used as legend for its "container"
-    // (typically the array the node belongs to), ensure that the container
-    // has a direct link to the node for the corresponding tab.
-    if (this.formElement && this.formElement.valueInLegend) {
-      node = this;
-      while (node) {
-        if (node.parentNode &&
-          node.parentNode.view &&
-          node.parentNode.view.array) {
-          node.legendChild = this;
-          if (node.formElement && node.formElement.legend) {
-            node.legend = applyArrayPath(node.formElement.legend, node.arrayPath);
-            formData.idx = (node.arrayPath.length > 0) ?
-              node.arrayPath[node.arrayPath.length - 1] + 1 :
-              node.childPos + 1;
-            formData.value = isSet(this.value) ? this.value : '';
-            node.legend = tmpl(node.legend, valueTemplateSettings)(formData);
-            break;
-          }
-        }
-        node = node.parentNode;
-      }
-    }
-  };
-
-
-  /**
-   * Returns the number of items that the array node should have based on
-   * previously submitted values.
-   *
-   * The whole difficulty is that values may be hidden deep in the subtree
-   * of the node and may actually target different arrays in the JSON schema.
-   *
-   * @function
-   * @param {Object} values Previously submitted values
-   * @param {Array(Number)} arrayPath the array path we're interested in
-   * @return {Number} The number of items in the array
-   */
-  formNode.prototype.getPreviousNumberOfItems = function (values, arrayPath) {
-    var key = null;
-    var arrayValue = null;
-    var childNumbers = null;
-    var idx = 0;
-
-    if (!values) {
-      // No previously submitted values, no need to go any further
-      return 0;
-    }
-
-    if (this.schemaElement) {
-      // Case 1: node is a simple input field that links to a key in the schema.
-      // The schema key looks typically like:
-      //  foo.bar[].baz.toto[].truc[].bidule
-      // The goal is to apply the array path and truncate the key to the last
-      // array we're interested in, e.g. with an arrayPath [4, 2]:
-      //  foo.bar[4].baz.toto[2]
-      key = truncateToArrayDepth(this.formElement.key, arrayPath.length);
-      key = applyArrayPath(key, arrayPath);
-      arrayValue = jsonform.util.getObjKey(values, key);
-      if (!arrayValue) {
-        // No key? That means this field had been left empty
-        // in previous submit
-        return 0;
-      }
-      childNumbers = this.children.map(child => {
-        return child.getPreviousNumberOfItems(values, arrayPath);
-      });
-      return Math.max(...[Math.max(...childNumbers) || 0, arrayValue.length]);
-    }
-    else if (this.view.array) {
-      // Case 2: node is an array-like node, look for input fields
-      // in its child template
-      return this.childTemplate.getPreviousNumberOfItems(values, arrayPath);
-    }
-    else {
-      // Case 3: node is a leaf or a container,
-      // recurse through the list of children and return the maximum
-      // number of items found in each subtree
-      childNumbers = this.children.map(child => {
-        return child.getPreviousNumberOfItems(values, arrayPath);
-      });
-      return Math.max(...childNumbers) || 0;
-    }
-  };
-
-
-  /**
-   * Returns the structured object that corresponds to the form values entered
-   * by the user for the node's subtree.
-   *
-   * The returned object follows the structure of the JSON schema that gave
-   * birth to the form.
-   *
-   * Obviously, the node must have been rendered before that function may
-   * be called.
-   *
-   * @function
-   * @param {Array(Number)} updateArrayPath Array path to use to pretend that
-   *  the entered values were actually entered for another item in an array
-   *  (this is used to move values around when an item is inserted/removed/moved
-   *  in an array)
-   * @return {Object} The object that follows the data schema and matches the
-   *  values entered by the user.
-   */
   formNode.prototype.getFormValues = function (updateArrayPath) {
     // The values object that will be returned
     var values = {};
@@ -1467,307 +684,28 @@
     return values;
   };
 
-  /**
-   * Renders the node.
-   *
-   * Rendering is done in three steps: HTML generation, DOM element creation
-   * and insertion, and an enhance step to bind event handlers.
-   *
-   * @function
-   * @param {Node} el The DOM element where the node is to be rendered. The
-   *  node is inserted at the right position based on its "childPos" property.
-   */
   formNode.prototype.render = function (el) {
     var html = this.generate(); // template to html
     el.innerHTML = html;
-    // this.setContent(html, el); // mount the html to the DOM
-    // this.enhance();
   };
 
-  /**
-   * Inserts/Updates the HTML content of the node in the DOM.
-   *
-   * If the HTML is an update, the new HTML content replaces the old one.
-   * The new HTML content is not moved around in the DOM in particular.
-   *
-   * The HTML is inserted at the right position in its parent's DOM subtree
-   * otherwise (well, provided there are enough children, but that should always
-   * be the case).
-   *
-   * @function
-   * @param {string} html The HTML content to render
-   * @param {Node} parentEl The DOM element that is to contain the DOM node.
-   *  This parameter is optional (the node's parent is used otherwise) and
-   *  is ignored if the node to render is already in the DOM tree.
-   */
-  formNode.prototype.setContent = function (html, parentEl) {
-    var node = $(html);
-    var parentNode = parentEl ||
-      (this.parentNode ? this.parentNode.el : this.ownerTree.domRoot);
-    var nextSibling = null;
-
-    if (this.el) {
-      // Replace the contents of the DOM element if the node is already in the tree
-      $(this.el).replaceWith(node);
-    }
-    else {
-      // Insert the node in the DOM if it's not already there
-      nextSibling = $(parentNode).children().get(this.childPos);
-      if (nextSibling) {
-        $(nextSibling).before(node);
-      }
-      else {
-        $(parentNode).append(node);
-      }
-    }
-
-    // Save the link between the form node and the generated HTML
-    this.el = node;
-
-    // Update the node's subtree, extracting DOM elements that match the nodes
-    // from the generated HTML
-    this.updateElement(this.el);
-  };
-
-
-  /**
-   * Updates the DOM element associated with the node.
-   *
-   * Only nodes that have ID are directly associated with a DOM element.
-   *
-   * @function
-   */
-  formNode.prototype.updateElement = function (domNode) {
-    if (this.id) {
-      this.el = $('#' + escapeSelector(this.id), domNode).get(0);
-      if (this.view && this.view.getElement) {
-        this.el = this.view.getElement(this.el);
-      }
-      // if ((this.fieldtemplate !== false) &&
-      //   this.view && this.view.fieldtemplate) {
-        // The field template wraps the element two or three level deep
-        // in the DOM tree, depending on whether there is anything prepended
-        // or appended to the input field
-        this.el = $(this.el).parent().parent();
-        if (this.prepend || this.prepend) {
-          this.el = this.el.parent();
-        }
-        this.el = this.el.get(0);
-      //}
-      if (this.parentNode && this.parentNode.view &&
-        this.parentNode.view.childTemplate) {
-        // TODO: the child template may introduce more than one level,
-        // so the number of levels introduced should rather be exposed
-        // somehow in jsonform.fieldtemplate.
-        this.el = $(this.el).parent().get(0);
-      }
-    }
-
-    for (const k in this.children) {
-      if (this.children.hasOwnProperty(k) == false) {
-        continue;
-      }
-      this.children[k].updateElement(this.el || domNode);
-    }
-  };
-
-
-  /**
-   * Generates the view's HTML content for the underlying model.
-   *
-   * @function
-   */
   formNode.prototype.generate = function () {
-    // var data = {
-    //   title: this.title,
-    //   id: this.id,
-    //   keydash: this.keydash,
-    //   elt: this.formElement,
-    //   schema: this.schemaElement,
-    //   node: this,
-    //   value: isSet(this.value) ? this.value : '',
-    //   escape: escapeHTML
-    // };
     var template = null;
-    // var html = '';
 
-    // // Complete the data context if needed
-    // if (this.ownerTree.formDesc.onBeforeRender) {
-    //   this.ownerTree.formDesc.onBeforeRender(data, this);
-    // }
-    // if (this.view.onBeforeRender) {
-    //   this.view.onBeforeRender(data, this);
-    // }
+    template = this.view.template;
 
-    // // Use the template that 'onBeforeRender' may have set,
-    // // falling back to that of the form element otherwise
-    // if (this.template) {
-    //   template = this.template;
-    // }
-    // else if (this.formElement && this.formElement.template) {
-    //   template = this.formElement.template;
-    // }
-    // else {
-      template = this.view.template;
-    // }
-
-    // // Wrap the view template in the generic field template
-    // // (note the strict equality to 'false', needed as we fallback
-    // // to the view's setting otherwise)
-    // // if ((this.fieldtemplate !== false) &&
-    // //   (this.fieldtemplate || this.view.fieldtemplate)) {
-    // //   template = jsonform.fieldTemplate(template, data.elt, data.node);
-    // // }
-
-    // // Wrap the content in the child template of its parent if necessary.
-    // if (this.parentNode && this.parentNode.view &&
-    //   this.parentNode.view.childTemplate) {
-    //   // only allow drag of children if default or enabled
-    //   template = this.parentNode.view.childTemplate(template, (!isSet(this.parentNode.formElement.draggable) ? true : this.parentNode.formElement.draggable));
-    // }
-
-    // Prepare the HTML of the children
     var childrenhtml = '';
     this.children.forEach(child => {
       childrenhtml += child.generate();
     });
     this.children_html = childrenhtml;
 
-    // data.fieldHtmlClass = '';
-    // if (this.ownerTree &&
-    //   this.ownerTree.formDesc &&
-    //   this.ownerTree.formDesc.params &&
-    //   this.ownerTree.formDesc.params.fieldHtmlClass) {
-    //   data.fieldHtmlClass = this.ownerTree.formDesc.params.fieldHtmlClass;
-    // }
-    // if (this.formElement &&
-    //   (typeof this.formElement.fieldHtmlClass !== 'undefined')) {
-    //   data.fieldHtmlClass = this.formElement.fieldHtmlClass;
-    // }
-
-    // Apply the HTML template
     html = template(this);
-    // if (data.schema && data.schema.type != 'submit') {
-    //     html = jsonform.fieldTemplate(html, data.elt, data.node);
-    // }
     
     return html;
   };
 
 
-  /**
-   * Enhances the view with additional logic, binding event handlers
-   * in particular.
-   *
-   * The function also runs the "insert" event handler of the view and
-   * form element if they exist (starting with that of the view)
-   *
-   * @function
-   */
-  formNode.prototype.enhance = function () {
-    var node = this;
-    var handlers = null;
-    var handler = null;
-    var formData = clone(this.ownerTree.formDesc.tpldata) || {};
-
-    if (this.formElement) {
-      // Check the view associated with the node as it may define an "onInsert"
-      // event handler to be run right away
-      if (this.view.onInsert) {
-        this.view.onInsert({ target: $(this.el) }, this);
-      }
-
-      handlers = this.handlers || this.formElement.handlers;
-
-      // Trigger the "insert" event handler
-      handler = this.onInsert || this.formElement.onInsert;
-      if (handler) {
-        handler({ target: $(this.el) }, this);
-      }
-      if (handlers) {
-        Object.keys(handlers).forEach((handler, onevent) => {
-          if (onevent === 'insert') {
-            handler({ target: $(this.el) }, this);
-          }
-        }, this);
-      }
-
-      // No way to register event handlers if the DOM element is unknown
-      // TODO: find some way to register event handlers even when this.el is not set.
-      if (this.el) {
-
-        // Register specific event handlers
-        // TODO: Add support for other event handlers
-        if (this.onChange)
-          $(this.el).bind('change', function (evt) { node.onChange(evt, node); });
-        if (this.view.onChange)
-          $(this.el).bind('change', function (evt) { node.view.onChange(evt, node); });
-        if (this.formElement.onChange)
-          $(this.el).bind('change', function (evt) { node.formElement.onChange(evt, node); });
-
-        if (this.onInput)
-          $(this.el).bind('input', function (evt) { node.onInput(evt, node); });
-        if (this.view.onInput)
-          $(this.el).bind('input', function (evt) { node.view.onInput(evt, node); });
-        if (this.formElement.onInput)
-          $(this.el).bind('input', function (evt) { node.formElement.onInput(evt, node); });
-
-        if (this.onClick)
-          $(this.el).bind('click', function (evt) { node.onClick(evt, node); });
-        if (this.view.onClick)
-          $(this.el).bind('click', function (evt) { node.view.onClick(evt, node); });
-        if (this.formElement.onClick)
-          $(this.el).bind('click', function (evt) { node.formElement.onClick(evt, node); });
-
-        if (this.onKeyUp)
-          $(this.el).bind('keyup', function (evt) { node.onKeyUp(evt, node); });
-        if (this.view.onKeyUp)
-          $(this.el).bind('keyup', function (evt) { node.view.onKeyUp(evt, node); });
-        if (this.formElement.onKeyUp)
-          $(this.el).bind('keyup', function (evt) { node.formElement.onKeyUp(evt, node); });
-
-        if (handlers) {
-          Object.keys(handlers).forEach((handler, onevent) => {
-            if (onevent !== 'insert') {
-              $(this.el).bind(onevent, function (evt) { handler(evt, node); });
-            }
-          }, this);
-        }
-      }
-
-      // Auto-update legend based on the input field that's associated with it
-      if (this.legendChild && this.legendChild.formElement) {
-        var onChangeHandler = function (evt) {
-          if (node.formElement && node.formElement.legend && node.parentNode) {
-            node.legend = applyArrayPath(node.formElement.legend, node.arrayPath);
-            formData.idx = (node.arrayPath.length > 0) ?
-              node.arrayPath[node.arrayPath.length - 1] + 1 :
-              node.childPos + 1;
-            formData.value = $(evt.target).val();
-            node.legend = tmpl(node.legend, valueTemplateSettings)(formData);
-            $(node.parentNode.el).trigger('legendUpdated');
-          }
-        };
-        $(this.legendChild.el).bind('change', onChangeHandler);
-        $(this.legendChild.el).bind('keyup', onChangeHandler);
-      }
-    }
-
-    // Recurse down the tree to enhance children
-    this.children.forEach(child => {
-      child.enhance();
-    });
-  };
-
-  /**
-   * Form tree class.
-   *
-   * Holds the internal representation of the form.
-   * The tree is always in sync with the rendered form, this allows to parse
-   * it easily.
-   *
-   * @class
-   */
   var formTree = function () {
     this.eventhandlers = [];
     this.root = null;
@@ -2050,52 +988,14 @@
   //   return node;
   // };
 
-
-  /**
-   * Computes the values associated with each input field in the tree based
-   * on previously submitted values or default values in the JSON schema.
-   *
-   * For arrays, the function actually creates and inserts additional
-   * nodes in the tree based on previously submitted values (also ensuring
-   * that the array has at least one item).
-   *
-   * The function sets the array path on all nodes.
-   * It should be called once in the lifetime of a form tree right after
-   * the tree structure has been created.
-   *
-   * @function
-   */
   formTree.prototype.computeInitialValues = function () {
     this.root.computeInitialValues(this.formDesc.value);
   };
 
-
-  /**
-   * Renders the form tree
-   *
-   * @function
-   * @param {Node} domRoot The "form" element in the DOM tree that serves as
-   *  root for the form
-   */
   formTree.prototype.render = function (domRoot) {
-    // if (!domRoot) return;
-    // this.domRoot = domRoot;
     this.root.render(domRoot);
-
-    // If the schema defines required fields, flag the form with the
-    // "jsonform-hasrequired" class for styling purpose
-    // (typically so that users may display a legend)
-    // if (this.hasRequiredField()) {
-    //   $(domRoot).addClass('jsonform-hasrequired');
-    // }
   };
 
-  /**
-   * Walks down the element tree with a callback
-   *
-   * @function
-   * @param {Function} callback The callback to call on each element
-   */
   formTree.prototype.forEachElement = function (callback) {
 
     var f = function (root) {
@@ -2184,20 +1084,6 @@
 
   };
 
-  /**
-   * Returns true if the form displays a "required" field.
-   *
-   * To keep things simple, the function parses the form's schema and returns
-   * true as soon as it finds a "required" flag even though, in theory, that
-   * schema key may not appear in the final form.
-   *
-   * Note that a "required" constraint on a boolean type is always enforced,
-   * the code skips such definitions.
-   *
-   * @function
-   * @return {boolean} True when the form has some required field,
-   *  false otherwise.
-   */
   formTree.prototype.hasRequiredField = function () {
     var parseElement = function (element) {
       if (!element) return null;
@@ -2231,19 +1117,6 @@
     return parseElement(this.formDesc.schema);
   };
 
-
-
-  /**
-   * Returns the structured object that corresponds to the form values entered
-   * by the use for the given form.
-   *
-   * The form must have been previously rendered through a call to jsonform.
-   *
-   * @function
-   * @param {Node} The <form> tag in the DOM
-   * @return {Object} The object that follows the data schema and matches the
-   *  values entered by the user.
-   */
   jsonform.getFormValue = function (formelt) {
     var form = $(formelt).data('jsonform-tree');
     if (!form) return null;
@@ -2251,84 +1124,6 @@
   };
 
 
-  /**
-   * Highlights errors reported by the JSON schema validator in the document.
-   *
-   * @function
-   * @param {Object} errors List of errors reported by the JSON schema validator
-   * @param {Object} options The JSON Form object that describes the form
-   *  (unused for the time being, could be useful to store example values or
-   *   specific error messages)
-   */
-  $.fn.jsonFormErrors = function (errors, options) {
-    $(".error", this).removeClass("error");
-    $(".warning", this).removeClass("warning");
-
-    $(".jsonform-errortext", this).hide();
-    if (!errors) return;
-
-    var errorSelectors = [];
-    for (var i = 0; i < errors.length; i++) {
-      // Compute the address of the input field in the form from the URI
-      // returned by the JSON schema validator.
-      // These URIs typically look like:
-      //  urn:uuid:cccc265e-ffdd-4e40-8c97-977f7a512853#/pictures/1/thumbnail
-      // What we need from that is the path in the value object:
-      //  pictures[1].thumbnail
-      // ... and the jQuery-friendly class selector of the input field:
-      //  .jsonform-error-pictures\[1\]---thumbnail
-      var key = errors[i].uri
-        .replace(/.*#\//, '')
-        .replace(/\//g, '.')
-        .replace(/\.([0-9]+)(?=\.|$)/g, '[$1]');
-      var errormarkerclass = ".jsonform-error-" +
-        escapeSelector(key.replace(/\./g, "---"));
-      errorSelectors.push(errormarkerclass);
-
-      var errorType = errors[i].type || "error";
-      $(errormarkerclass, this).addClass(errorType);
-      $(errormarkerclass + " .jsonform-errortext", this).html(errors[i].message).show();
-    }
-
-    // Look for the first error in the DOM and ensure the element
-    // is visible so that the user understands that something went wrong
-    errorSelectors = errorSelectors.join(',');
-    var firstError = $(errorSelectors).get(0);
-    if (firstError && firstError.scrollIntoView) {
-      firstError.scrollIntoView(true, {
-        behavior: 'smooth'
-      });
-    }
-  };
-
- 
-  /**
-   * Generates the HTML form from the given JSON Form object and renders the form.
-   *
-   * Main entry point of the library. Defined as a jQuery function that typically
-   * needs to be applied to a <form> element in the document.
-   *
-   * The function handles the following properties for the JSON Form object it
-   * receives as parameter:
-   * - schema (required): The JSON Schema that describes the form to render
-   * - form: The options form layout description, overrides default layout
-   * - prefix: String to use to prefix computed IDs. Default is an empty string.
-   *  Use this option if JSON Form is used multiple times in an application with
-   *  schemas that have overlapping parameter names to avoid running into multiple
-   *  IDs issues. Default value is "jsonform-[counter]".
-   * - validate: Validates form against schema upon submission. Uses the value
-   * of the "validate" property as validator if it is an object.
-   * - displayErrors: Function to call with errors upon form submission.
-   *  Default is to render the errors next to the input fields.
-   * - submitEvent: Name of the form submission event to bind to.
-   *  Default is "submit". Set this option to false to avoid event binding.
-   * - onSubmit: Callback function to call when form is submitted
-   * - onSubmitValid: Callback function to call when form is submitted without
-   *  errors.
-   *
-   * @function
-   * @param {Object} options The JSON Form object to use as basis for the form
-   */
   $.fn.jsonForm = function (options) {
     var p = this;
     options.submitEvent = 'submit';
@@ -2350,47 +1145,6 @@
     return form;
   };
 
-  /**
-   * one app contains only one jForms which may contains multiple jForm, which
-   * is generated by $.fn.jsonForm(). to simplify the whole jForms logic.
-   * We only use two layers of JSON structure. The first layer is for 'form', 
-   * where each application has at least one or multiple forms, 
-   * and each form corresponds to a tab. 
-   * The second layer represents the controls contained within each form.
-   */
-  // $.fn.jsonForms = function (forms) {
-  //   /* only one tab, do not display any menu */
-  //   if (Object.keys(forms).length > 1) {
-  //     $('#layout').removeAttr('hidden');
-  //   }
-
-  //   Object.keys(forms).forEach((key, index)=>{
-  //     this.append(`<form style="width:360px;" id="${key}" class="content"></form>`);
-  //     $('.pure-menu-list').append(`<li class="pure-menu-item"><a href="#${key}" class="pure-menu-link" onclick="showContent(\'${key}\', this)">${key}</a></li>`);
-  //     $(`#${key}`).jsonForm(key, {schema: forms[key]});
-  //   });
-
-  //   let firstKey = Object.keys(forms)[0];
-  //   if (firstKey) {
-  //     showContent(firstKey, null);
-  //   }
-  // };
-
-  /**
-   * Retrieves the structured values object generated from the values
-   * entered by the user and the data schema that gave birth to the form.
-   *
-   * Defined as a jQuery function that typically needs to be applied to
-   * a <form> element whose content has previously been generated by a
-   * call to "jsonForm".
-   *
-   * Unless explicitly disabled, the values are automatically validated
-   * against the constraints expressed in the schema.
-   *
-   * @function
-   * @return {Object} Structured values object that matches the user inputs
-   *  and the data schema.
-   */
   $.fn.jsonFormValue = function () {
     return jsonform.getFormValue(this);
   };
