@@ -219,19 +219,14 @@
 
   var inputFieldTemplate = function (type) {
     return {
-      template:  (data) => `<input type="${type}" name="${data.node.name}" value="${escape(data.value)}" id="${data.id}" ${data.node.disabled ? " disabled" : ""} ${data.node.readOnly ? " readonly='readonly'" : ""} ${data.node.schemaElement && (data.node.schemaElement.step > 0 || data.node.schemaElement.step == "any") ? " step='" + data.node.schemaElement.step + "'" : ""} ${data.node.schemaElement && data.node.schemaElement.minLength ? " minlength='" + data.node.schemaElement.minLength + "'" : ""} ${data.node.schemaElement && data.node.schemaElement.maxLength ? " maxlength='" + data.node.schemaElement.maxLength + "'" : ""} ${data.node.schemaElement && data.node.schemaElement.required && (data.node.schemaElement.type !== "boolean") ? " required='required'" : ""} ${data.node.placeholder ? " placeholder='" + escape(data.node.placeholder) + "'" : ""} />`,
-      'childTemplate': function (inner) {
-        return '<div class="pure-control-group">' +
-          inner +
-          '</div>';
-      }
+      template: (node) => `<div class="pure-control-group"><label>${node.title}</label><input type="${type}" name="${node.name}" /></div>`,
     }
   };
 
   jsonform.elementTypes = {
     'none': {'template': ''},
-    'Root': {template: (data) => `<div class="pure-form pure-form-aligned">${data.children}</div>`},
-    'text': inputFieldTemplate('text'),
+    'Root': {'template': (node) => `<div class="pure-form pure-form-aligned">${node.children_html}</div>`},
+    'Input': inputFieldTemplate('text'),
     'password': inputFieldTemplate('password'),
     'date': inputFieldTemplate('date'),
     'datetime': inputFieldTemplate('datetime'),
@@ -720,6 +715,11 @@
    * @class
    */
   var formNode = function () {
+    this.name = null; /* neccessary, for get input control value. */
+    this.title = null; /* neccessary, as the label for input. */
+    this.description = null; /* not neccessary, only display in stack mode */
+    this.template = null; /* neccessary, DOM node template. */
+
     /**
      * The node's ID (may not be set)
      */
@@ -749,12 +749,8 @@
      */
     this.schemaElement = null;
 
-    /**
-     * Pointer to the "view" associated with the node, typically the right
-     * object in jsonform.elementTypes
-     */
-    this.view = null;
-
+    
+    
     /**
      * Node's subtree (if one is defined)
      */
@@ -1483,8 +1479,9 @@
    */
   formNode.prototype.render = function (el) {
     var html = this.generate(); // template to html
-    this.setContent(html, el); // mount the html to the DOM
-    this.enhance();
+    el.innerHTML = html;
+    // this.setContent(html, el); // mount the html to the DOM
+    // this.enhance();
   };
 
   /**
@@ -1581,78 +1578,78 @@
    * @function
    */
   formNode.prototype.generate = function () {
-    var data = {
-      title: this.title,
-      id: this.id,
-      keydash: this.keydash,
-      elt: this.formElement,
-      schema: this.schemaElement,
-      node: this,
-      value: isSet(this.value) ? this.value : '',
-      escape: escapeHTML
-    };
+    // var data = {
+    //   title: this.title,
+    //   id: this.id,
+    //   keydash: this.keydash,
+    //   elt: this.formElement,
+    //   schema: this.schemaElement,
+    //   node: this,
+    //   value: isSet(this.value) ? this.value : '',
+    //   escape: escapeHTML
+    // };
     var template = null;
-    var html = '';
+    // var html = '';
 
-    // Complete the data context if needed
-    if (this.ownerTree.formDesc.onBeforeRender) {
-      this.ownerTree.formDesc.onBeforeRender(data, this);
-    }
-    if (this.view.onBeforeRender) {
-      this.view.onBeforeRender(data, this);
-    }
-
-    // Use the template that 'onBeforeRender' may have set,
-    // falling back to that of the form element otherwise
-    if (this.template) {
-      template = this.template;
-    }
-    else if (this.formElement && this.formElement.template) {
-      template = this.formElement.template;
-    }
-    else {
-      template = this.view.template;
-    }
-
-    // Wrap the view template in the generic field template
-    // (note the strict equality to 'false', needed as we fallback
-    // to the view's setting otherwise)
-    // if ((this.fieldtemplate !== false) &&
-    //   (this.fieldtemplate || this.view.fieldtemplate)) {
-    //   template = jsonform.fieldTemplate(template, data.elt, data.node);
+    // // Complete the data context if needed
+    // if (this.ownerTree.formDesc.onBeforeRender) {
+    //   this.ownerTree.formDesc.onBeforeRender(data, this);
+    // }
+    // if (this.view.onBeforeRender) {
+    //   this.view.onBeforeRender(data, this);
     // }
 
-    // Wrap the content in the child template of its parent if necessary.
-    if (this.parentNode && this.parentNode.view &&
-      this.parentNode.view.childTemplate) {
-      // only allow drag of children if default or enabled
-      template = this.parentNode.view.childTemplate(template, (!isSet(this.parentNode.formElement.draggable) ? true : this.parentNode.formElement.draggable));
-    }
+    // // Use the template that 'onBeforeRender' may have set,
+    // // falling back to that of the form element otherwise
+    // if (this.template) {
+    //   template = this.template;
+    // }
+    // else if (this.formElement && this.formElement.template) {
+    //   template = this.formElement.template;
+    // }
+    // else {
+      template = this.view.template;
+    // }
+
+    // // Wrap the view template in the generic field template
+    // // (note the strict equality to 'false', needed as we fallback
+    // // to the view's setting otherwise)
+    // // if ((this.fieldtemplate !== false) &&
+    // //   (this.fieldtemplate || this.view.fieldtemplate)) {
+    // //   template = jsonform.fieldTemplate(template, data.elt, data.node);
+    // // }
+
+    // // Wrap the content in the child template of its parent if necessary.
+    // if (this.parentNode && this.parentNode.view &&
+    //   this.parentNode.view.childTemplate) {
+    //   // only allow drag of children if default or enabled
+    //   template = this.parentNode.view.childTemplate(template, (!isSet(this.parentNode.formElement.draggable) ? true : this.parentNode.formElement.draggable));
+    // }
 
     // Prepare the HTML of the children
     var childrenhtml = '';
     this.children.forEach(child => {
       childrenhtml += child.generate();
     });
-    data.children = childrenhtml;
+    this.children_html = childrenhtml;
 
-    data.fieldHtmlClass = '';
-    if (this.ownerTree &&
-      this.ownerTree.formDesc &&
-      this.ownerTree.formDesc.params &&
-      this.ownerTree.formDesc.params.fieldHtmlClass) {
-      data.fieldHtmlClass = this.ownerTree.formDesc.params.fieldHtmlClass;
-    }
-    if (this.formElement &&
-      (typeof this.formElement.fieldHtmlClass !== 'undefined')) {
-      data.fieldHtmlClass = this.formElement.fieldHtmlClass;
-    }
+    // data.fieldHtmlClass = '';
+    // if (this.ownerTree &&
+    //   this.ownerTree.formDesc &&
+    //   this.ownerTree.formDesc.params &&
+    //   this.ownerTree.formDesc.params.fieldHtmlClass) {
+    //   data.fieldHtmlClass = this.ownerTree.formDesc.params.fieldHtmlClass;
+    // }
+    // if (this.formElement &&
+    //   (typeof this.formElement.fieldHtmlClass !== 'undefined')) {
+    //   data.fieldHtmlClass = this.formElement.fieldHtmlClass;
+    // }
 
     // Apply the HTML template
-    html = template(data);
-    if (data.schema && data.schema.type != 'submit') {
-        html = jsonform.fieldTemplate(html, data.elt, data.node);
-    }
+    html = template(this);
+    // if (data.schema && data.schema.type != 'submit') {
+    //     html = jsonform.fieldTemplate(html, data.elt, data.node);
+    // }
     
     return html;
   };
@@ -1777,30 +1774,34 @@
     this.formDesc = null;
   };
 
-  formTree.prototype.createNode = function (schema) {
+  formTree.prototype.createNode = function (key, schema) {
     var node = new formNode();
+
+    node.name = key;
+    node.title = schema.title || key;
+    node.description = schema.description || "";
+    node.view = jsonform.elementTypes[schema['x-component']]; /* 'x-component' has been verified in caller. */
 
     return node;
   }
 
-  formTree.prototype.traverseSchema = function (schema) {
+  formTree.prototype.traverseSchema = function (key, schema) {
     var node = null;
 
     if (schema['type'] && schema['x-component']) {
-      // console.log(schema.type);
-      node = this.createNode(schema);
+      node = this.createNode(key, schema);
     }
   
     if (schema.type == 'object' && schema.properties) {
       Object.keys(schema.properties).forEach(key => {
-        node.appendChild(this.traverseSchema(schema.properties[key]));
+        node.appendChild(this.traverseSchema(key, schema.properties[key]));
       });
     }
     
     // after jsv, no need to do too much sanity check
     // if (schema.type == 'array') {
       if (schema.items) {
-        node.appendChild(this.traverseSchema(schema.items));
+        node.appendChild(this.traverseSchema(key, schema.items));
       }
     // }
 
@@ -1822,15 +1823,13 @@
    *
    * @function
    */
-  formTree.prototype.initialize = function (json_config) {
-    json_config = json_config || {};
+  formTree.prototype.initialize = function (config) {
+    formDesc = config || {};
 
     // Keep a pointer to the initial JSONForm
     // (note clone returns a shallow copy, only first-level is cloned)
-    this.json_config = clone(json_config);
-    this.root = this.traverseSchema(this.json_config.schema);
-
-    console.log("dd");
+    this.formDesc = clone(config);
+    this.root = this.traverseSchema("root", this.formDesc.schema);
 
     // Compute form prefix if no prefix is given.
     // this.json_config.prefix = this.json_config.prefix || 'jsonform-' + Date.now();
@@ -2079,16 +2078,16 @@
    *  root for the form
    */
   formTree.prototype.render = function (domRoot) {
-    if (!domRoot) return;
-    this.domRoot = domRoot;
-    this.root.render();
+    // if (!domRoot) return;
+    // this.domRoot = domRoot;
+    this.root.render(domRoot);
 
     // If the schema defines required fields, flag the form with the
     // "jsonform-hasrequired" class for styling purpose
     // (typically so that users may display a legend)
-    if (this.hasRequiredField()) {
-      $(domRoot).addClass('jsonform-hasrequired');
-    }
+    // if (this.hasRequiredField()) {
+    //   $(domRoot).addClass('jsonform-hasrequired');
+    // }
   };
 
   /**
@@ -2331,19 +2330,19 @@
    * @param {Object} options The JSON Form object to use as basis for the form
    */
   $.fn.jsonForm = function (options) {
-    var formElt = this;
+    var p = this;
     options.submitEvent = 'submit';
 
     var form = new formTree();
     form.initialize(options);
-    form.render(formElt.get(0));
+    form.render(p.get(0));
 
     // Keep a direct pointer to the JSON schema for form submission purpose
-    formElt.data("jsonform-tree", form);
+    p.data("jsonform-tree", form);
 
     if (options.submitEvent) {
-      formElt.unbind((options.submitEvent) + '.jsonform');
-      formElt.bind((options.submitEvent) + '.jsonform', function (evt) {
+      p.unbind((options.submitEvent) + '.jsonform');
+      p.bind((options.submitEvent) + '.jsonform', function (evt) {
         form.submit(evt);
       });
     }
