@@ -74,10 +74,7 @@
     'number': inputFieldTemplate('number'),
     'tel': inputFieldTemplate('tel'),
     'url': inputFieldTemplate('url'),
-
     'date': inputFieldTemplate('date'),
-    'datetime': inputFieldTemplate('datetime'),
-    'datetime-local': inputFieldTemplate('datetime-local'),
     'time': inputFieldTemplate('time'),
     
     'range': {
