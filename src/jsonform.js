@@ -73,17 +73,13 @@
     'email': inputFieldTemplate('email'),
     'number': inputFieldTemplate('number'),
     'tel': inputFieldTemplate('tel'),
+    'url': inputFieldTemplate('url'),
 
     'date': inputFieldTemplate('date'),
     'datetime': inputFieldTemplate('datetime'),
     'datetime-local': inputFieldTemplate('datetime-local'),
-    
-    'month': inputFieldTemplate('month'),
-  
-    
     'time': inputFieldTemplate('time'),
-    'url': inputFieldTemplate('url'),
-    'week': inputFieldTemplate('week'),
+    
     'range': {
       template : (data) => {
         const classAttribute = data.fieldHtmlClass ? `class="${data.fieldHtmlClass}" ` : '';
