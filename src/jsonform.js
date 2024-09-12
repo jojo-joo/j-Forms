@@ -66,19 +66,21 @@
   };
 
   jsonform.elementTypes = {
-    'None': {'template': ''},
-    'Root': {'template': (node) => `<div class="pure-form pure-form-aligned">${node.children_html}</div>`},
-    'Input': inputFieldTemplate('text'),
-    'Password': inputFieldTemplate('password'),
-    
+    'none': {'template': ''},
+    'root': {'template': (node) => `<div class="pure-form pure-form-aligned">${node.children_html}</div>`},
+    'text': inputFieldTemplate('text'),
+    'password': inputFieldTemplate('password'),
+    'email': inputFieldTemplate('email'),
+    'number': inputFieldTemplate('number'),
+    'tel': inputFieldTemplate('tel'),
+
     'date': inputFieldTemplate('date'),
     'datetime': inputFieldTemplate('datetime'),
     'datetime-local': inputFieldTemplate('datetime-local'),
-    'email': inputFieldTemplate('email'),
+    
     'month': inputFieldTemplate('month'),
-    'number': inputFieldTemplate('number'),
-    'search': inputFieldTemplate('search'),
-    'tel': inputFieldTemplate('tel'),
+  
+    
     'time': inputFieldTemplate('time'),
     'url': inputFieldTemplate('url'),
     'week': inputFieldTemplate('week'),
@@ -719,7 +721,7 @@
     node.name = key;
     node.title = schema.title || key;
     node.description = schema.description || "";
-    node.view = jsonform.elementTypes[schema['x-component']]; /* 'x-component' has been verified in caller. */
+    node.view = jsonform.elementTypes[schema['j-component']]; /* 'j-component' has been verified in caller. */
 
     return node;
   }
@@ -727,7 +729,7 @@
   formTree.prototype.traverseSchema = function (key, schema) {
     var node = null;
 
-    if (schema['type'] && schema['x-component']) {
+    if (schema['type'] && schema['j-component']) {
       node = this.createNode(key, schema);
     }
   
