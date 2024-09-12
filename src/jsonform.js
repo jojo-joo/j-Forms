@@ -69,7 +69,8 @@
     'None': {'template': ''},
     'Root': {'template': (node) => `<div class="pure-form pure-form-aligned">${node.children_html}</div>`},
     'Input': inputFieldTemplate('text'),
-    'password': inputFieldTemplate('password'),
+    'Password': inputFieldTemplate('password'),
+    
     'date': inputFieldTemplate('date'),
     'datetime': inputFieldTemplate('datetime'),
     'datetime-local': inputFieldTemplate('datetime-local'),
