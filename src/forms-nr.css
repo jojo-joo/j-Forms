@@ -216,6 +216,10 @@ Copyright (c) Nicolas Gallagher and Jonathan Neal
     transform: translateX(26px);
 }
 
+.pure-form .range-value {
+    margin: 0.5em 0em;
+}
+
 .pure-form input[type="range"] {
     -webkit-appearance: none;
     width: 100%;
