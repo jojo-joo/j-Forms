@@ -61,7 +61,7 @@
 
   var inputFieldTemplate = function (type) {
     return {
-      template: (node) => `<div class="pure-control-group"><label>${node.title}</label><input type="${type}" name="${node.name}" /></div>`,
+      template: (node) => `<div class="pure-control-group"><label>${node.title}</label><input type="${type}" name="${node.key}" /></div>`,
     }
   };
 
@@ -76,17 +76,15 @@
     'url': inputFieldTemplate('url'),
     'date': inputFieldTemplate('date'),
     'time': inputFieldTemplate('time'),
-    // 'range': inputFieldTemplate('range'),
-    
     'range': {
-      template : (data) => {
+      template : (node) => {
         // const classAttribute = data.fieldHtmlClass ? `class="${data.fieldHtmlClass}" ` : '';
         // const disabledAttribute = data.node.disabled ? ' disabled' : '';
         // const requiredAttribute = data.node.schemaElement && data.node.schemaElement.required ? ' required="required"' : '';
 
         // const indicator = data.range.indicator ? `<span class="range-value" rel="${data.id}">${escape(data.value)}</span>` : '';
       
-        return `<div class="pure-control-group"><label>${data.title}</label><input type="range" min="0" max="100" value="50">
+        return `<div class="pure-control-group"><label>${node.title}</label><input type="range" name="${node.key}" min="0" max="100" value="50">
         <div class="range-value">50</div></div>`;
       },
       // 'onInput': function (evt, elt) {
@@ -128,19 +126,19 @@
       // }
     },
     'checkbox': {
-      template : (data) => `<div class="checkbox"><label class="toggle-switch"><input type="checkbox" id="${data.id}" name="${data.node.name}" value="1" ${data.value ? 'checked' : ''} ${data.node.disabled ? 'disabled' : ''} ${data.node.schemaElement && data.node.schemaElement.required && (data.node.schemaElement.type !== "boolean") ? 'required="required"' : ''} /> ${data.node.inlinetitle || ""}<div class="slider"></div></label></div>`,
+      template : (data) => `<div class="checkbox"><label class="toggle-switch"><input type="checkbox" id="${data.id}" name="${data.node.key}" value="1" ${data.value ? 'checked' : ''} ${data.node.disabled ? 'disabled' : ''} ${data.node.schemaElement && data.node.schemaElement.required && (data.node.schemaElement.type !== "boolean") ? 'required="required"' : ''} /> ${data.node.inlinetitle || ""}<div class="slider"></div></label></div>`,
       'getElement': function (el) {
         return $(el).parent().get(0);
       }
     },
     'file': {
-      'template': '<input class="input-file" id="<%= id %>" name="<%= node.name %>" type="file" ' +
+      'template': '<input class="input-file" id="<%= id %>" name="<%= node.key %>" type="file" ' +
         '<%= (node.schemaElement && node.schemaElement.required ? " required=\'required\'" : "") %>' +
         '<%= (node.formElement && node.formElement.accept ? (" accept=\'" + node.formElement.accept + "\'") : "") %>' +
         '/>',
     },
     'select': {
-      template : (data) => `<select name="${data.node.name}" id="${data.id}" ${data.node.schemaElement && data.node.schemaElement.disabled ? " disabled" : ""} ${data.node.schemaElement && data.node.schemaElement.required ? " required='required'" : ""}>
+      template : (data) => `<select name="${data.node.key}" id="${data.id}" ${data.node.schemaElement && data.node.schemaElement.disabled ? " disabled" : ""} ${data.node.schemaElement && data.node.schemaElement.required ? " required='required'" : ""}>
   ${data.node.options.map((key, val) => {
     if (key instanceof Object) {
       return data.value === key.value
@@ -157,7 +155,7 @@
     'button': {template :(data) => `<button type="button" ${data.id ? `id="${data.id}"` : ''} class="button-secondary pure-button ${data.elt.htmlClass ? data.elt.htmlClass : ''}">${data.node.title}</button>`},
     'actions': {template : (data) => `<div class="${data.elt.htmlClass || ""}">${data.children}</div>`},
     'hidden': {
-      'template': '<input type="hidden" id="<%= id %>" name="<%= node.name %>" value="<%= escape(value) %>" />'
+      'template': '<input type="hidden" id="<%= id %>" name="<%= node.key %>" value="<%= escape(value) %>" />'
     }
   };
 
@@ -296,27 +294,11 @@
    * @class
    */
   var formNode = function () {
-    this.name = null; /* neccessary, for get input control value. */
+    this.key = null; /* neccessary, for get input control value. */
     this.title = null; /* neccessary, as the label for input. */
     this.description = null; /* not neccessary, only display in stack mode */
     this.template = null; /* neccessary, DOM node template. */
-
-    /**
-     * The node's ID (may not be set)
-     */
-    this.id = null;
-
-    /**
-     * The node's key path (may not be set)
-     */
-    this.key = null;
-
-    /**
-     * DOM element associated witht the form element.
-     *
-     * The DOM element is set when the form element is rendered.
-     */
-    this.el = null;
+    this.el = null; /* DOM element associated witht the formNode. */
 
     /**
      * Link to the form element that describes the node's layout
@@ -546,7 +528,7 @@
       params.forEach(param => {
         // TODO: check this, there may exist corner cases with this approach
         // (with multiple checkboxes for instance)
-        $('[name="' + escapeSelector(param.name) + '"]', $(this.el)).val('');
+        $('[name="' + escapeSelector(param.key) + '"]', $(this.el)).val('');
       }, this);
     }
     else if (this.view && this.view.array) {
@@ -592,13 +574,13 @@
     // because serializeArray() ignores them
     formArray = formArray.concat(
       $(':input[type=checkbox]:not(:disabled):not(:checked)', this.el).map(function () {
-        return { "name": this.name, "value": this.checked }
+        return { "name": this.key, "value": this.checked }
       }).get()
     );
 
     if (updateArrayPath) {
       formArray.forEach(param => {
-        param.name = applyArrayPath(param.name, updateArrayPath);
+        param.key = applyArrayPath(param.key, updateArrayPath);
       });
     }
 
@@ -607,7 +589,7 @@
 
     for (var i = 0; i < formArray.length; i++) {
       // Retrieve the key definition from the data schema
-      var name = formArray[i].name;
+      var name = formArray[i].key;
       var eltSchema = getSchemaKey(formSchema, name);
       var arrayMatch = null;
       var cval = null;
@@ -671,8 +653,8 @@
         formArray[i].value = null;
       }
 
-      if (formArray[i].name && (formArray[i].value !== null)) {
-        jsonform.util.setObjKey(values, formArray[i].name, formArray[i].value);
+      if (formArray[i].key && (formArray[i].value !== null)) {
+        jsonform.util.setObjKey(values, formArray[i].key, formArray[i].value);
       }
     }
     return values;
@@ -681,13 +663,11 @@
   formNode.prototype.render = function (el) {
     var html = this.generate(); // template to html
     el.innerHTML = html;
+    this.enhance();
   };
 
   formNode.prototype.generate = function () {
-    var template = null;
-
-    template = this.view.template;
-
+    var template = this.view.template;
     var childrenhtml = '';
     this.children.forEach(child => {
       childrenhtml += child.generate();
@@ -697,6 +677,17 @@
     html = template(this);
     
     return html;
+  };
+
+  formNode.prototype.enhance = function () {
+    if (this.view.onChange) $(this.el).bind('change', function(evt) { node.view.onChange(evt, node); });
+    if (this.view.onInput)  $(this.el).bind('input', function(evt) { node.view.onInput(evt, node); });
+    if (this.view.onClick)  $(this.el).bind('click', function(evt) { node.view.onClick(evt, node); });
+    if (this.view.onKeyUp)  $(this.el).bind('keyup', function(evt) { node.view.onKeyUp(evt, node); });
+  
+    _.each(this.children, function (child) {
+      child.enhance();
+    });
   };
 
 
@@ -709,7 +700,7 @@
   formTree.prototype.createNode = function (key, schema) {
     var node = new formNode();
 
-    node.name = key;
+    node.key = key;
     node.title = schema.title || key;
     node.description = schema.description || "";
     node.view = jsonform.elementTypes[schema['j-component']]; /* 'j-component' has been verified in caller. */
@@ -843,8 +834,8 @@
   //       this.formDesc.onElementSchema(formElement, schemaElement);
   //     }
 
-  //     formElement.name =
-  //       formElement.name ||
+  //     formElement.key =
+  //       formElement.key ||
   //       formElement.key;
   //     formElement.title =
   //       formElement.title ||
