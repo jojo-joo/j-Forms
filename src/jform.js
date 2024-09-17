@@ -99,12 +99,7 @@
         }).join(' ')}</select></div>`;
       }
     },
-    'checkbox': {
-      template : (data) => `<div class="checkbox"><label class="toggle-switch"><input type="checkbox" id="${data.id}" name="${data.node.key}" value="1" ${data.value ? 'checked' : ''} ${data.node.disabled ? 'disabled' : ''} ${data.node.schemaElement && data.node.schemaElement.required && (data.node.schemaElement.type !== "boolean") ? 'required="required"' : ''} /> ${data.node.inlinetitle || ""}<div class="slider"></div></label></div>`,
-      'getElement': function (el) {
-        return $(el).parent().get(0);
-      }
-    },
+    'checkbox': inputFieldTemplate('checkbox'),
     'file': {
       'template': '<input class="input-file" id="<%= id %>" name="<%= node.key %>" type="file" ' +
         '<%= (node.schemaElement && node.schemaElement.required ? " required=\'required\'" : "") %>' +
@@ -112,7 +107,7 @@
         '/>',
     },
     
-    'submit': {template : (data) => `<div class="pure-control-group"><input type="submit" ${data.id ? `id="${data.id}"` : ''} class="button-success  pure-button ${data.elt.htmlClass || ""}" value="${data.value || data.node.title}" ${data.node.disabled ? 'disabled' : ''} /></div>`},
+    'submit': {template : (node) => `<div class="pure-control-group"><input type="submit" ${node.key ? `id="${node.key}"` : ''} class="button-success  pure-button" value="${node.key || node.title}" ${node.disabled ? 'disabled' : ''} /></div>`},
     'button': {template :(data) => `<button type="button" ${data.id ? `id="${data.id}"` : ''} class="button-secondary pure-button ${data.elt.htmlClass ? data.elt.htmlClass : ''}">${data.node.title}</button>`},
     'actions': {template : (data) => `<div class="${data.elt.htmlClass || ""}">${data.children}</div>`},
     'hidden': {

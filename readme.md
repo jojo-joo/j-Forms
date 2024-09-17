@@ -8,6 +8,7 @@ Considering that formily is full compatiable with the standard JSON schema , we 
 for pure-css is light, not too many types of UI components, we have to discard some components which formily supported, and neccessary supported components are:
 input/TextArea/Password/Slider/Select/Checkbox/Radio/DatePicker/TimerPicker/Upload/Switch/Object/Card/Tabs/Collapse/ArrayCards/ArrayTable/Text
 - datetime/datetime-local/date-range/time-range is not neccessary, can combine by date & time.
+- radio group is not neccessary , can using select instead.
 ### technology used to decreace code
 - using ES6  to replace of underscore
 - using zeptor to replace of jquery
@@ -21,7 +22,7 @@ input/TextArea/Password/Slider/Select/Checkbox/Radio/DatePicker/TimerPicker/Uplo
 ### Modern web technology
 - [pure-css](https://github.com/pure-css/pure/) A set of small, responsive CSS modules that you can use in every web project.
 - [jsonform](https://github.com/jsonform/jsonform) The JSON Form library is a JavaScript client-side library that takes a structured data model defined using JSON Schema as input and returns a Bootstrap 3-friendly HTML form that matches the schema.
-- [zepto](https://github.com/madrobby/zepto) Zepto is a minimalist JavaScript library for modern browsers with a largely jQuery-compatible API. If you use jQuery, you already know how to use Zepto.
+- [zepto](https://github.com/madrobby/zepto) Zepto is a minimalist JavaScript library for modern browsers with a largely jQuery-compatible API. If you use jQuery, you already know how to use Zepto. 
 - [jsonforms](https://github.com/eclipse[source/jsonforms) Customizable JSON Schema-based forms with React, Angular and Vue support out of the box.
 - [formily](https://github.com/alibaba/formily) Cross Device & High Performance Normal Form/Dynamic(JSON Schema) Form/Form Builder -- Support React/React Native/Vue 2/Vue 3
 
