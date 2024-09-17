@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ant Design 风格的 Range 控件</title>
+    <style>
+        .range-container {
+            display: flex;
+            align-items: center;
+            margin: 20px;
+        }
+
+        .range-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #e9e9e9;
+            border-radius: 4px;
+            outline: none;
+            padding: 0;
+            margin: 0 10px;
+        }
+
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+            border: 2px solid #1890ff;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <div class="range-container">
+        <input type="range" class="range-slider" min="0" max="100" value="50">
+        <div class="range-value">50</div>
+    </div>
+
+    <script>
+        const rangeSlider = document.querySelector('.range-slider');
+        const rangeValue = document.querySelector('.range-value');
+
+        rangeSlider.addEventListener('input', function() {
+            rangeValue.textContent = this.value;
+        });
+    </script>
+</body>
+</html>
+
+<!-- <style>
+  body {
+    font-family: Arial, sans-serif;
+  }
+  #valueDisplay {
+    margin-top: 20px;
+  }
+</style>
+
+<label for="myRange">Adjust the value:</label>
+<input type="range" id="myRange" name="points" min="0" max="100" value="50">
+
+<div id="valueDisplay">
+  Value: <span>50</span>
+</div>
+
+<script>
+  // 获取滑块元素
+  var range = document.getElementById("myRange");
+  // 获取显示值的元素
+  var valueDisplay = document.getElementById("valueDisplay").getElementsByTagName("span")[0];
+
+  // 为滑块设置一个事件监听器，当值改变时更新显示
+  range.oninput = function() {
+    valueDisplay.textContent = this.value;
+  }
+</script>
+ -->

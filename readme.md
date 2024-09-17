@@ -1,12 +1,19 @@
 # json based webui generator for MCU
+considering that we run this framwork in a embeded system which extreme resource constraints, everything have to compromise to the framework size and speed. only implement which is neccessary.
 
 ## Features
 ### Full Compatiable with JSON Schema
 Considering that formily is full compatiable with the standard JSON schema , we implement a Minimalist Design of the formily which can reduce our design works.
-#### unsupported components
+### unsupported components reduce footprint
 for pure-css is light, not too many types of UI components, we have to discard some components which formily supported, and neccessary supported components are:
 input/TextArea/Password/Slider/Select/Checkbox/Radio/DatePicker/TimerPicker/Upload/Switch/Object/Card/Tabs/Collapse/ArrayCards/ArrayTable/Text
-
+- datetime/datetime-local/date-range/time-range is not neccessary, can combine by date & time.
+### technology used to decreace code
+- using ES6  to replace of underscore
+- using zeptor to replace of jquery
+- dedicated light framework to handle json schema
+- split the framework into 2 part, part 1 is compile, verify schema and generate safe schema for part 2, part 2 is dynamic ui generating.
+-  
 ### Easy to use
 - one json schema, build the whole web portal including frontend & backend & protocol.
 - only one include file which is required for C language.

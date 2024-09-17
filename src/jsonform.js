@@ -76,58 +76,56 @@
     'url': inputFieldTemplate('url'),
     'date': inputFieldTemplate('date'),
     'time': inputFieldTemplate('time'),
+    // 'range': inputFieldTemplate('range'),
     
     'range': {
       template : (data) => {
-        const classAttribute = data.fieldHtmlClass ? `class="${data.fieldHtmlClass}" ` : '';
-        const disabledAttribute = data.node.disabled ? ' disabled' : '';
-        const requiredAttribute = data.node.schemaElement && data.node.schemaElement.required ? ' required="required"' : '';
+        // const classAttribute = data.fieldHtmlClass ? `class="${data.fieldHtmlClass}" ` : '';
+        // const disabledAttribute = data.node.disabled ? ' disabled' : '';
+        // const requiredAttribute = data.node.schemaElement && data.node.schemaElement.required ? ' required="required"' : '';
 
-        const indicator = data.range.indicator ? `<span class="range-value" rel="${data.id}">${escape(data.value)}</span>` : '';
+        // const indicator = data.range.indicator ? `<span class="range-value" rel="${data.id}">${escape(data.value)}</span>` : '';
       
-        return `<div class="range"><input type="range" ${classAttribute}
-          name="${data.node.name}" value="${escape(data.value)}" id="${data.id}"
-          max="${data.range.max}" step="${data.range.step}" ${requiredAttribute} />
-          ${indicator}
-        </div>`;
+        return `<div class="pure-control-group"><label>${data.title}</label><input type="range" min="0" max="100" value="50">
+        <div class="range-value">50</div></div>`;
       },
-      'onInput': function (evt, elt) {
-        const valueIndicator = document.querySelector('span.range-value[rel="' + elt.id + '"]');
-        if (valueIndicator) {
-          valueIndicator.innerText = evt.target.value;
-        }
-      },
-      'onBeforeRender': function (data, node) {
-        data.range = {
-          min: 1,
-          max: 100,
-          step: 1,
-          indicator: false
-        };
-        if (!node || !node.schemaElement) return;
-        if (node.formElement && node.formElement.step) {
-          data.range.step = node.formElement.step;
-        }
-        if (node.formElement && node.formElement.indicator) {
-          data.range.indicator = node.formElement.indicator;
-        }
-        if (typeof node.schemaElement.minimum !== 'undefined') {
-          if (node.schemaElement.exclusiveMinimum) {
-            data.range.min = node.schemaElement.minimum + data.range.step;
-          }
-          else {
-            data.range.min = node.schemaElement.minimum;
-          }
-        }
-        if (typeof node.schemaElement.maximum !== 'undefined') {
-          if (node.schemaElement.exclusiveMaximum) {
-            data.range.max = node.schemaElement.maximum - data.range.step;
-          }
-          else {
-            data.range.max = node.schemaElement.maximum;
-          }
-        }
-      }
+      // 'onInput': function (evt, elt) {
+      //   const valueIndicator = document.querySelector('span.range-value[rel="' + elt.id + '"]');
+      //   if (valueIndicator) {
+      //     valueIndicator.innerText = evt.target.value;
+      //   }
+      // },
+      // 'onBeforeRender': function (data, node) {
+      //   data.range = {
+      //     min: 1,
+      //     max: 100,
+      //     step: 1,
+      //     indicator: false
+      //   };
+      //   if (!node || !node.schemaElement) return;
+      //   if (node.formElement && node.formElement.step) {
+      //     data.range.step = node.formElement.step;
+      //   }
+      //   if (node.formElement && node.formElement.indicator) {
+      //     data.range.indicator = node.formElement.indicator;
+      //   }
+      //   if (typeof node.schemaElement.minimum !== 'undefined') {
+      //     if (node.schemaElement.exclusiveMinimum) {
+      //       data.range.min = node.schemaElement.minimum + data.range.step;
+      //     }
+      //     else {
+      //       data.range.min = node.schemaElement.minimum;
+      //     }
+      //   }
+      //   if (typeof node.schemaElement.maximum !== 'undefined') {
+      //     if (node.schemaElement.exclusiveMaximum) {
+      //       data.range.max = node.schemaElement.maximum - data.range.step;
+      //     }
+      //     else {
+      //       data.range.max = node.schemaElement.maximum;
+      //     }
+      //   }
+      // }
     },
     'checkbox': {
       template : (data) => `<div class="checkbox"><label class="toggle-switch"><input type="checkbox" id="${data.id}" name="${data.node.name}" value="1" ${data.value ? 'checked' : ''} ${data.node.disabled ? 'disabled' : ''} ${data.node.schemaElement && data.node.schemaElement.required && (data.node.schemaElement.type !== "boolean") ? 'required="required"' : ''} /> ${data.node.inlinetitle || ""}<div class="slider"></div></label></div>`,
