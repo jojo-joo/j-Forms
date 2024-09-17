@@ -82,12 +82,6 @@
     'time': inputFieldTemplate('time'),
     'range': {
       template : (node) => {
-        // const classAttribute = data.fieldHtmlClass ? `class="${data.fieldHtmlClass}" ` : '';
-        // const disabledAttribute = data.node.disabled ? ' disabled' : '';
-        // const requiredAttribute = data.node.schemaElement && data.node.schemaElement.required ? ' required="required"' : '';
-
-        // const indicator = data.range.indicator ? `<span class="range-value" rel="${data.id}">${escape(data.value)}</span>` : '';
-      
         return `<div class="pure-control-group"><label>${node.title}</label><input type="range" id="${node.key}" min="0" max="100" value="50">
         <div class="range-value" id="${node.key}-value">50</div></div>`;
       },
@@ -96,37 +90,14 @@
         var rangeValueElement = $("#" + node.key + "-value");
         rangeValueElement.textContent = rangeElement.value;
       },
-      // 'onBeforeRender': function (data, node) {
-      //   data.range = {
-      //     min: 1,
-      //     max: 100,
-      //     step: 1,
-      //     indicator: false
-      //   };
-      //   if (!node || !node.schemaElement) return;
-      //   if (node.formElement && node.formElement.step) {
-      //     data.range.step = node.formElement.step;
-      //   }
-      //   if (node.formElement && node.formElement.indicator) {
-      //     data.range.indicator = node.formElement.indicator;
-      //   }
-      //   if (typeof node.schemaElement.minimum !== 'undefined') {
-      //     if (node.schemaElement.exclusiveMinimum) {
-      //       data.range.min = node.schemaElement.minimum + data.range.step;
-      //     }
-      //     else {
-      //       data.range.min = node.schemaElement.minimum;
-      //     }
-      //   }
-      //   if (typeof node.schemaElement.maximum !== 'undefined') {
-      //     if (node.schemaElement.exclusiveMaximum) {
-      //       data.range.max = node.schemaElement.maximum - data.range.step;
-      //     }
-      //     else {
-      //       data.range.max = node.schemaElement.maximum;
-      //     }
-      //   }
-      // }
+    },
+    'select': {
+      template: (node) => {
+        return `<div class="pure-control-group"><label>${node.title}</label><select name="${node.key}" id="${node.key}" >
+        ${node.enum.map(val => {
+          return node.value === val ? `<option selected value="${val}">${val}</option>` : `<option value="${val}">${val}</option>`;      
+        }).join(' ')}</select></div>`;
+      }
     },
     'checkbox': {
       template : (data) => `<div class="checkbox"><label class="toggle-switch"><input type="checkbox" id="${data.id}" name="${data.node.key}" value="1" ${data.value ? 'checked' : ''} ${data.node.disabled ? 'disabled' : ''} ${data.node.schemaElement && data.node.schemaElement.required && (data.node.schemaElement.type !== "boolean") ? 'required="required"' : ''} /> ${data.node.inlinetitle || ""}<div class="slider"></div></label></div>`,
@@ -140,20 +111,7 @@
         '<%= (node.formElement && node.formElement.accept ? (" accept=\'" + node.formElement.accept + "\'") : "") %>' +
         '/>',
     },
-    'select': {
-      template : (data) => `<select name="${data.node.key}" id="${data.id}" ${data.node.schemaElement && data.node.schemaElement.disabled ? " disabled" : ""} ${data.node.schemaElement && data.node.schemaElement.required ? " required='required'" : ""}>
-  ${data.node.options.map((key, val) => {
-    if (key instanceof Object) {
-      return data.value === key.value
-        ? `<option selected value="${key.value}">${key.title}</option>`
-        : `<option value="${key.value}">${key.title}</option>`;
-    } else {
-      return data.value === key
-        ? `<option selected value="${key}">${key}</option>`
-        : `<option value="${key}">${key}</option>`;
-    }
-  }).join(' ')}</select>`
-    },
+    
     'submit': {template : (data) => `<div class="pure-control-group"><input type="submit" ${data.id ? `id="${data.id}"` : ''} class="button-success  pure-button ${data.elt.htmlClass || ""}" value="${data.value || data.node.title}" ${data.node.disabled ? 'disabled' : ''} /></div>`},
     'button': {template :(data) => `<button type="button" ${data.id ? `id="${data.id}"` : ''} class="button-secondary pure-button ${data.elt.htmlClass ? data.elt.htmlClass : ''}">${data.node.title}</button>`},
     'actions': {template : (data) => `<div class="${data.elt.htmlClass || ""}">${data.children}</div>`},
@@ -710,6 +668,7 @@
     node.key = key;
     node.title = schema.title || key;
     node.description = schema.description || "";
+    node.enum = schema.enum || [];
     node.view = jsonform.elementTypes[schema['j-component']]; /* 'j-component' has been verified in caller. */
 
     return node;
