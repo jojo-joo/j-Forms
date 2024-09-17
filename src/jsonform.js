@@ -84,15 +84,14 @@
 
         // const indicator = data.range.indicator ? `<span class="range-value" rel="${data.id}">${escape(data.value)}</span>` : '';
       
-        return `<div class="pure-control-group"><label>${node.title}</label><input type="range" name="${node.key}" min="0" max="100" value="50">
-        <div class="range-value">50</div></div>`;
+        return `<div class="pure-control-group"><label>${node.title}</label><input type="range" id="${node.key}" min="0" max="100" value="50">
+        <div class="range-value" id="${node.key}-value">50</div></div>`;
       },
-      // 'onInput': function (evt, elt) {
-      //   const valueIndicator = document.querySelector('span.range-value[rel="' + elt.id + '"]');
-      //   if (valueIndicator) {
-      //     valueIndicator.innerText = evt.target.value;
-      //   }
-      // },
+      onInput: (node) => {
+        var rangeElement =  $("#" + node.key);
+        var rangeValueElement = $("#" + node.key + "-value");
+        rangeValueElement.text(rangeElement.val());
+      },
       // 'onBeforeRender': function (data, node) {
       //   data.range = {
       //     min: 1,
@@ -680,12 +679,16 @@
   };
 
   formNode.prototype.enhance = function () {
-    if (this.view.onChange) $(this.el).bind('change', function(evt) { node.view.onChange(evt, node); });
-    if (this.view.onInput)  $(this.el).bind('input', function(evt) { node.view.onInput(evt, node); });
-    if (this.view.onClick)  $(this.el).bind('click', function(evt) { node.view.onClick(evt, node); });
-    if (this.view.onKeyUp)  $(this.el).bind('keyup', function(evt) { node.view.onKeyUp(evt, node); });
+    if (this.view.onChange) 
+      $("#"+this.key).bind('change', (evt) => { this.view.onChange(this); });
+    if (this.view.onInput)  
+      $("#"+this.key).bind('input', (evt)=> { this.view.onInput(this); });
+    if (this.view.onClick)  
+      $("#"+this.key).bind('click', (evt)=> { this.view.onClick(this); });
+    if (this.view.onKeyUp)  
+      $("#"+this.key).bind('keyup', (evt)=> { this.view.onKeyUp(this); });
   
-    _.each(this.children, function (child) {
+    this.children.forEach(child => {
       child.enhance();
     });
   };
