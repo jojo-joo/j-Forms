@@ -72,3 +72,6 @@ jsonform-2.2.5.04: 156,349 bytes
 - file-transloadit removed
 - imageselect removed
 - iconselect removed
+
+selector can not start with number.
+selector no space.

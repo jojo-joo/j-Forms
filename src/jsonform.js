@@ -1,4 +1,8 @@
 (function ($) {
+  var $ = function(selector) {
+    return document.querySelector(selector);
+  };
+
   const clone = (value) => {
     if (Array.isArray(value)) {
       return [...value];
@@ -90,7 +94,7 @@
       onInput: (node) => {
         var rangeElement =  $("#" + node.key);
         var rangeValueElement = $("#" + node.key + "-value");
-        rangeValueElement.text(rangeElement.val());
+        rangeValueElement.textContent = rangeElement.value;
       },
       // 'onBeforeRender': function (data, node) {
       //   data.range = {
@@ -680,13 +684,13 @@
 
   formNode.prototype.enhance = function () {
     if (this.view.onChange) 
-      $("#"+this.key).bind('change', (evt) => { this.view.onChange(this); });
+      $("#"+this.key).addEventListener('change', () => { this.view.onChange(this); });
     if (this.view.onInput)  
-      $("#"+this.key).bind('input', (evt)=> { this.view.onInput(this); });
+      $("#"+this.key).addEventListener('input', ()=> { this.view.onInput(this); });
     if (this.view.onClick)  
-      $("#"+this.key).bind('click', (evt)=> { this.view.onClick(this); });
+      $("#"+this.key).addEventListener('click', ()=> { this.view.onClick(this); });
     if (this.view.onKeyUp)  
-      $("#"+this.key).bind('keyup', (evt)=> { this.view.onKeyUp(this); });
+      $("#"+this.key).addEventListener('keyup', ()=> { this.view.onKeyUp(this); });
   
     this.children.forEach(child => {
       child.enhance();
@@ -980,8 +984,8 @@
     this.root.computeInitialValues(this.formDesc.value);
   };
 
-  formTree.prototype.render = function (domRoot) {
-    this.root.render(domRoot);
+  formTree.prototype.render = function (el) {
+    this.root.render(el);
   };
 
   formTree.prototype.forEachElement = function (callback) {
@@ -1112,29 +1116,27 @@
   };
 
 
-  $.fn.jsonForm = function (options) {
+  var jsonForm = function (el, options) {
     var p = this;
     options.submitEvent = 'submit';
 
     var form = new formTree();
     form.initialize(options);
-    form.render(p.get(0));
+    form.render(el);
 
     // Keep a direct pointer to the JSON schema for form submission purpose
-    p.data("jsonform-tree", form);
+    // p.data("jsonform-tree", form);
 
-    if (options.submitEvent) {
-      p.unbind((options.submitEvent) + '.jsonform');
-      p.bind((options.submitEvent) + '.jsonform', function (evt) {
-        form.submit(evt);
-      });
-    }
+    // if (options.submitEvent) {
+    //   p.unbind((options.submitEvent) + '.jsonform');
+    //   p.bind((options.submitEvent) + '.jsonform', function (evt) {
+    //     form.submit(evt);
+    //   });
+    // }
 
     return form;
   };
 
-  $.fn.jsonFormValue = function () {
-    return jsonform.getFormValue(this);
-  };
+  window.jsonForm = jsonForm;
 
 })(((typeof Zepto !== 'undefined') ? Zepto : { fn: {} }));
