@@ -1,4 +1,4 @@
-(function ($) {
+(function () {
   var $ = function(selector) {
     return document.querySelector(selector);
   };
@@ -849,4 +849,22 @@
 
   window.jsonForm = jsonForm;
 
-})(((typeof Zepto !== 'undefined') ? Zepto : { fn: {} }));
+})();
+
+// ui related script here
+function showTabContent(el) {
+  var tabs = document.querySelectorAll('.tab');
+  var tabContents = document.querySelectorAll('.tab-content');
+  
+  tabs.forEach(tab => {
+    tab.classList.remove('active');
+  });
+  
+  tabContents.forEach(content => {
+    content.classList.remove('active');
+  });
+
+  // Set the active tab and content
+  el.classList.add('active');
+  document.querySelector("#"+el.innerText).classList.add('active');
+}

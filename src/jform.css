@@ -242,3 +242,38 @@ Copyright (c) Nicolas Gallagher and Jonathan Neal
     border: 2px solid #1890ff;
     box-sizing: border-box;
 }
+
+.tabs {
+display: flex;
+border-bottom: 1px solid #d9d9d9;
+position: fixed; /* Fixed position */
+top: 0; /* Top of the page */
+left: 0; /* Left side of the page */
+right: 0; /* Right side of the page */
+background: #fff; /* White background to cover the whole width */
+z-index: 1000; /* Ensure it stays on top */
+padding: 0 16px; /* Padding on both sides */
+}
+.tab {
+padding: 8px 16px;
+cursor: pointer;
+border: none;
+margin-bottom: -1px;
+color: #666;
+background: none;
+}
+.tab.active {
+color: #1890ff;
+border-color: #d9d9d9;
+border-bottom: 2px solid #1890ff;
+background: #fff;
+}
+.tab-content {
+display: none;
+padding: 16px;
+border-top: none;
+margin-top: 48px; /* Adjust this value based on the height of your tabs */
+}
+.tab-content.active {
+display: block;
+}
