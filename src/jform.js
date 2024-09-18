@@ -9,20 +9,6 @@
     }
     return Object.assign({}, value);
   };
-
-  const escape = (str) => {
-    try {return str.replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;')
-    .replace(/\//g, '&#x2F;');} 
-    catch (error)
-    {
-      console.error('error:', error.message)
-    }
-    
-  };
   
   /**
    * Returns true if given value is neither "undefined" nor null
@@ -50,19 +36,6 @@
     return selector.replace(/([ \!\"\#\$\%\&\'\(\)\*\+\,\.\/\:\;<\=\>\?\@\[\\\]\^\`\{\|\}\~])/g, '\\$1');
   };
 
-  /**
-   *
-   * Slugifies a string by replacing spaces with _ Used to create
-   * valid classnames and ids for the form.
-   *
-   * @function
-   * @param {String} str The string to slugify
-   * @return {String} The slugified string.
-   */
-  var slugify = function (str) {
-    return str.replace(/\ /g, '_');
-  }
-
   var inputFieldTemplate = function (type) {
     return {
       template: (node) => `<div class="pure-control-group"><label>${node.title}</label><input type="${type}" name="${node.key}" /></div>`,
@@ -70,9 +43,10 @@
   };
 
   jsonform.elementTypes = {
-    'none': {'template': ''},
-    'root': {'template': (node) => `<div class="pure-form pure-form-aligned">${node.children_html}</div>`},
-    'text': inputFieldTemplate('text'),
+    'none': {template: ''},
+    'root': {template: (node) => `<div class="pure-form pure-form-aligned">${node.children_html}</div>`},
+    'text': {template: (node) => `<div class="pure-control-group"><label>${node.title}</label></div>`},
+    'input': inputFieldTemplate('text'),
     'password': inputFieldTemplate('password'),
     'email': inputFieldTemplate('email'),
     'number': inputFieldTemplate('number'),
@@ -714,225 +688,8 @@
     // (note clone returns a shallow copy, only first-level is cloned)
     this.formDesc = clone(config);
     this.root = this.traverseSchema("root", this.formDesc.schema);
-
-    // Compute form prefix if no prefix is given.
-    // this.json_config.prefix = this.json_config.prefix || 'jsonform-' + Date.now();
-
-    // JSON schema shorthand
-    // if (this.json_config.schema && !this.json_config.schema.properties) {
-    //   this.json_config.schema = {
-    //     properties: this.json_config.schema
-    //   };
-    // }
-
-    // this.json_config.params = this.json_config.params || {};
-
-    // Create the root of the tree
-    // this.root = new formNode();
-    // this.root.ownerTree = this;
-    // this.root.title = this.json_config.title;
-    // this.root.view = jsonform.elementTypes['root'];
-    //this.root.view = jsonform.elementTypes['root'].template(this.root);
-
-    // Generate the tree from the form description
-    // Object.keys(this.json_config.schema).forEach(key => {
-    //   this.root.appendChild(this.createNode(key));
-    // });
-
-    // Compute the values associated with each node
-    // (for arrays, the computation actually creates the form nodes)
-    //this.computeInitialValues();
   };
 
-  /**
-   * Builds the internal form tree representation from the requested layout.
-   *
-   * The function is recursive, generating the node children as necessary.
-   * The function extracts the values from the previously submitted values
-   * (this.formDesc.value) or from default values defined in the schema.
-   *
-   * @function
-   * @param {Object} formElement JSONForm element to render
-   * @param {Object} context The parsing context (the array depth in particular)
-   * @return {Object} The node that matches the element.
-   */
-  // formTree.prototype.createNode = function (formElement) {
-  //   var schemaElement = null;
-  //   var node = new formNode();
-  //   var view = null;
-
-  //   // The form element parameter directly comes from the initial
-  //   // JSONForm object. We'll make a shallow copy of it and of its children
-  //   // not to pollute the original object.
-  //   // (note JSON.parse(JSON.stringify()) cannot be used since there may be
-  //   // event handlers in there!)
-  //   // formElement = clone(formElement);
-  //   // if (formElement.items) {
-  //   //   formElement.items = clone(formElement.items);
-  //   // }
-
-  //   if (formElement.key) {
-  //     // The form element is directly linked to an element in the JSON
-  //     // schema. The properties of the form element override those of the
-  //     // element in the JSON schema. Properties from the JSON schema complete
-  //     // those of the form element otherwise.
-
-  //     // Retrieve the element from the JSON schema
-  //     schemaElement = getSchemaKey(
-  //       this.formDesc.schema,
-  //       formElement.key);
-  //     if (!schemaElement) {
-  //       // The JSON Form is invalid!
-  //       throw new Error('The JSONForm object references the schema key "' +
-  //         formElement.key + '" but that key does not exist in the JSON schema');
-  //     }
-
-  //     // Schema element has just been found, let's trigger the
-  //     // "onElementSchema" event
-  //     // (tidoust: not sure what the use case for this is, keeping the
-  //     // code for backward compatibility)
-  //     if (this.formDesc.onElementSchema) {
-  //       this.formDesc.onElementSchema(formElement, schemaElement);
-  //     }
-
-  //     formElement.key =
-  //       formElement.key ||
-  //       formElement.key;
-  //     formElement.title =
-  //       formElement.title ||
-  //       schemaElement.title;
-  //     formElement.description =
-  //       formElement.description ||
-  //       schemaElement.description;
-  //     formElement.readOnly =
-  //       formElement.readOnly ||
-  //       schemaElement.readOnly ||
-  //       formElement.readonly ||
-  //       schemaElement.readonly;
-
-  //     // Compute the ID of the input field
-  //     if (!formElement.id) {
-  //       formElement.id = escapeSelector(this.formDesc.prefix) +
-  //         '-elt-' + slugify(formElement.key);
-  //     }
-
-  //     // Should empty strings be included in the final value?
-  //     // TODO: it's rather unclean to pass it through the schema.
-  //     if (formElement.allowEmpty) {
-  //       schemaElement._jsonform_allowEmpty = true;
-  //     }
-
-  //     // If the form element does not define its type, use the type of
-  //     // the schema element.
-  //     if (!formElement.type) {
-  //       // If schema type is an array containing only a type and "null",
-  //       // remove null and make the element non-required
-  //       if (Array.isArray(schemaElement.type)) {
-  //         if (schemaElement.type.includes("null")) {
-  //           schemaElement.type = schemaElement.type.filter(type => type !== "null");
-  //           schemaElement.required = false;
-  //         }
-  //         if (schemaElement.type.length > 1) {
-  //           throw new Error("Cannot process schema element with multiple types.");
-  //         }
-  //         schemaElement.type = Array.isArray(schemaElement.type) ? schemaElement.type[0] : schemaElement.type;
-  //       }
-
-  //       if ((schemaElement.type === 'string') &&
-  //         (schemaElement.format === 'color')) {
-  //         formElement.type = 'color';
-  //       } else if ((schemaElement.type === 'number' ||
-  //         schemaElement.type === 'integer') &&
-  //         !schemaElement['enum']) {
-  //         formElement.type = 'number';
-  //         if (schemaElement.type === 'number') schemaElement.step = 'any';
-  //       } else if ((schemaElement.type === 'string' ||
-  //         schemaElement.type === 'any') &&
-  //         !schemaElement['enum']) {
-  //         formElement.type = 'text';
-  //       } else if (schemaElement.type === 'boolean') {
-  //         formElement.type = 'checkbox';
-  //       } else if (schemaElement.type === 'object') {
-  //         if (schemaElement.properties) {
-  //           formElement.type = 'fieldset';
-  //         } else {
-  //           formElement.type = 'textarea';
-  //         }
-  //       } else if (typeof schemaElement['enum'] !== 'undefined') {
-  //         formElement.type = 'select';
-  //       } else {
-  //         formElement.type = schemaElement.type;
-  //       }
-  //     }
-
-  //     // Unless overridden in the definition of the form element (or unless
-  //     // there's a titleMap defined), use the enumeration list defined in
-  //     // the schema
-  //     if (!formElement.options && schemaElement['enum']) {
-  //       if (formElement.titleMap) {
-  //         formElement.options = schemaElement['enum'].map(value => {
-  //           return {
-  //             value: value,
-  //             title: hasOwnProperty(formElement.titleMap, value) ? formElement.titleMap[value] : value
-  //           };
-  //         });
-  //       }
-  //       else {
-  //         formElement.options = schemaElement['enum'];
-  //       }
-  //     }
-
-  //     // Flag a list of checkboxes with multiple choices
-  //     if ((formElement.type === 'checkboxes') && schemaElement.items) {
-  //       var itemsEnum = schemaElement.items['enum'];
-  //       if (itemsEnum) {
-  //         schemaElement.items._jsonform_checkboxes_as_array = true;
-  //       }
-  //       if (!itemsEnum && schemaElement.items[0]) {
-  //         itemsEnum = schemaElement.items[0]['enum'];
-  //         if (itemsEnum) {
-  //           schemaElement.items[0]._jsonform_checkboxes_as_array = true;
-  //         }
-  //       }
-  //     }
-
-  //     // If the form element targets an "object" in the JSON schema,
-  //     // we need to recurse through the list of children to create an
-  //     // input field per child property of the object in the JSON schema
-  //     if (schemaElement.type === 'object') {
-  //       schemaElement.properties.forEach((prop, propName) => {
-  //         node.appendChild(this.createNode({
-  //           key: formElement.key + '.' + propName
-  //         }));
-  //       }, this);
-  //     }
-  //   }
-
-  //   if (!formElement.type) {
-  //     formElement.type = 'none';
-  //   }
-  //   view = jsonform.elementTypes[formElement.type];
-  //   if (!view) {
-  //     throw new Error('The JSONForm contains an element whose type is unknown: "' +
-  //       formElement.type + '"');
-  //   }
-
-  //   // A few characters need to be escaped to use the ID as jQuery selector
-  //   formElement.iddot = escapeSelector(formElement.id || '');
-
-  //   // Initialize the form node from the form element and schema element
-  //   node.formElement = formElement;
-  //   node.schemaElement = schemaElement;
-  //   node.view = view;
-  //   node.ownerTree = this;
-
-  //   // Set event handlers
-  //   if (!formElement.handlers) {
-  //     formElement.handlers = {};
-  //   }
-
-  //   return node;
-  // };
 
   formTree.prototype.computeInitialValues = function () {
     this.root.computeInitialValues(this.formDesc.value);
@@ -1071,7 +828,6 @@
 
 
   var jsonForm = function (el, options) {
-    var p = this;
     options.submitEvent = 'submit';
 
     var form = new formTree();
