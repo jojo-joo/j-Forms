@@ -1,57 +1,91 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" type="text/css" href="./forms-nr.css" />
-  <link rel="stylesheet" type="text/css" href="menu.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simple Ant Design Style Tabs</title>
+<style>
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid #d9d9d9;
+    position: fixed; /* Fixed position */
+    top: 0; /* Top of the page */
+    left: 0; /* Left side of the page */
+    right: 0; /* Right side of the page */
+    background: #fff; /* White background to cover the whole width */
+    z-index: 1000; /* Ensure it stays on top */
+    padding: 0 16px; /* Padding on both sides */
+  }
+  .tab {
+    padding: 8px 16px;
+    cursor: pointer;
+    border: none;
+    margin-bottom: -1px;
+    color: #666;
+    background: none;
+  }
+  .tab.active {
+    color: #1890ff;
+    border-color: #d9d9d9;
+    border-bottom: 2px solid #1890ff;
+    background: #fff;
+  }
+  .tab-content {
+    display: none;
+    padding: 16px;
+    border-top: none;
+    margin-top: 48px; /* Adjust this value based on the height of your tabs */
+  }
+  .tab-content.active {
+    display: block;
+  }
 </style>
 </head>
 <body>
-  <script type="text/javascript" src="zepto.min.js"></script>
-  <script type="text/javascript" src="jsonform.js"></script>
-  <script type="text/javascript">
-  $(document).ready(function () {
-    $('body').jsonForm({
-      "form": {
-        "USERNAME": { "type": "text" },
-        "Password": { "type": "password" },
-        'Birth Day': { "type": 'date' },
-        'datetime': { "type": 'datetime' },
-        'datetime-local': { "type": 'datetime-local' },
-        'email': { "type": 'email' },
-        'month': { "type": 'month' },
-        'number': { "type": 'number' },
-        'search': { "type": 'search' },
-        'tel': { "type": 'tel' },
-        'time': { "type": 'time' },
-        'url': { "type": 'url' },
-        'week': { "type": 'week' },
-        "range": { "type": "range", "default": 4, "minimum": 0, "exclusiveMinimum": true, "maximum": 10 },
-        "this is checkbox": { "type": "checkbox" },
-        "gender": { "type": "select", "enum": ["male", "female", "alien"] },
-        "submit": { "type": "submit" }
-      },
-      "command": {
-        'button1': { "type": 'button', "title": 'BUTTON1' },
-        'button2': { "type": 'button', "title": 'BUTTON2' },
-        'button3': { "type": 'button', "title": 'BUTTON3' },
-        'button4': { "type": 'button', "title": 'BUTTON4' },
-        'button5': { "type": 'button', "title": 'BUTTON5' }
-      }
-    });
-  });
-  </script>
-<div id="layout" hidden>
-  <a href="#menu" id="menuLink" class="menu-link">
-      <span></span>
-  </a>
-  <div id="menu">
-      <div class="pure-menu">
-          <a class="pure-menu-heading" href="#company">Company</a>
-          <ul class="pure-menu-list">
-          </ul>
-      </div>
-  </div>
+
+<div class="tabs">
+  <div class="tab" onclick="showTabContent(0)"><B>Config</B></div>
+  <div class="tab" onclick="showTabContent(1)"><B>Info</B></div>
+  <div class="tab" onclick="showTabContent(2)"><B>Status</B></div>
 </div>
+
+<div class="tab-content" id="tabContent0">In the dynamic world of collaborative endeavors, communication stands as the cornerstone of success. It is the invisible thread that weaves together the diverse skills, perspectives, and efforts of team members into a cohesive and effective unit. The art of communication is not merely about the exchange of information; it is about understanding, empathy, and the creation of an environment where every voice can be heard and valued.
+
+  Effective communication in team projects begins with clarity of purpose. Each member must have a clear understanding of the project's goals, their individual roles, and how their contributions align with the collective vision. This clarity is achieved through transparent and frequent discussions, where expectations are set and roles are defined. It is also crucial for leaders to foster an atmosphere of openness, where questions are encouraged and feedback is welcomed.
+  
+  Listening is the often undervalued twin of speaking in the realm of communication. Active listening involves not just hearing the words spoken but also understanding the intent, emotions, and nuances behind them. In team projects, active listening allows for the recognition of ideas that may otherwise be overlooked and for the resolution of misunderstandings that could lead to conflicts. It is through listening that team members can truly understand each other's strengths and weaknesses, leading to a more balanced and efficient allocation of tasks.
+  
+  Non-verbal communication also plays a significant role in team dynamics. Body language, facial expressions, and tone of voice can convey messages that words alone cannot. For instance, a nod of agreement or a furrowed brow can provide immediate feedback in a discussion, helping to gauge the team's consensus or concerns. Being aware of and responsive to non-verbal cues can greatly enhance the effectiveness of communication and contribute to a more harmonious team environment.
+  
+  Technology has revolutionized the way we communicate, offering tools that facilitate real-time collaboration and information sharing across geographical boundaries. However, the reliance on digital communication also presents challenges. Miscommunication can occur due to the lack of non-verbal cues, and the sheer volume of digital messages can lead to information overload. To overcome these challenges, it is important to establish protocols for digital communication, such as setting expectations for response times, using clear subject lines, and ensuring that important messages are not lost in a sea of emails or chat messages.
+  
+  Conflict resolution is an inevitable part of any team project, and effective communication is the key to navigating these challenges. Open and honest dialogue, empathy, and a willingness to compromise are essential in resolving disputes. It is also important to address conflicts promptly, as unresolved issues can fester and erode team morale.
+  
+  In conclusion, communication is the lifeblood of successful team projects. It is the means by which ideas are shared, goals are achieved, and relationships are built. By fostering a culture of clear, active, and empathetic communication, teams can overcome obstacles, innovate, and achieve remarkable results. The art of communication is not just a skill; it is the very fabric that binds a team together in pursuit of a common goal.</div>
+<div class="tab-content" id="tabContent1">Content for Tab 2</div>
+<div class="tab-content" id="tabContent2">Content for Tab 3</div>
+
+<script>
+  function showTabContent(index) {
+    var tabs = document.querySelectorAll('.tab');
+    var tabContents = document.querySelectorAll('.tab-content');
+    
+    tabs.forEach(tab => {
+      tab.classList.remove('active');
+    });
+    
+    tabContents.forEach(content => {
+      content.classList.remove('active');
+    });
+
+    // Set the active tab and content
+    tabs[index].classList.add('active');
+    document.getElementById('tabContent' + index).classList.add('active');
+  }
+
+  // Set the default active tab
+  showTabContent(0);
+</script>
+
 </body>
 </html>
