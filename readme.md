@@ -10,6 +10,7 @@ for pure-css is light, not too many types of UI components, we have to discard s
 input/TextArea/Password/Slider/Select/Checkbox/Radio/DatePicker/TimerPicker/Upload/Switch/Object/Card/Tabs/Collapse/ArrayCards/ArrayTable/Text
 - datetime/datetime-local/date-range/time-range is not neccessary, can combine by date & time.
 - radio group is not neccessary , can using select instead.
+- for grouping controls, I use tabs, get rid of collapse cards. no reason, only one is enough.
 ### technology used to decreace code
 - using ES6  to replace of underscore
 - using zeptor to replace of jquery

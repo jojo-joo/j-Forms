@@ -44,12 +44,12 @@
 <body>
 
 <div class="tabs">
-  <div class="tab" onclick="showTabContent(0)"><B>Config</B></div>
-  <div class="tab" onclick="showTabContent(1)"><B>Info</B></div>
-  <div class="tab" onclick="showTabContent(2)"><B>Status</B></div>
+  <div class="tab active" onclick="showTabContent(this)"><B>Config</B></div>
+  <div class="tab" onclick="showTabContent(this)"><B>Info</B></div>
+  <div class="tab" onclick="showTabContent(this)"><B>Status</B></div>
 </div>
 
-<div class="tab-content" id="tabContent0">In the dynamic world of collaborative endeavors, communication stands as the cornerstone of success. It is the invisible thread that weaves together the diverse skills, perspectives, and efforts of team members into a cohesive and effective unit. The art of communication is not merely about the exchange of information; it is about understanding, empathy, and the creation of an environment where every voice can be heard and valued.
+<div class="tab-content active" id="Config">In the dynamic world of collaborative endeavors, communication stands as the cornerstone of success. It is the invisible thread that weaves together the diverse skills, perspectives, and efforts of team members into a cohesive and effective unit. The art of communication is not merely about the exchange of information; it is about understanding, empathy, and the creation of an environment where every voice can be heard and valued.
 
   Effective communication in team projects begins with clarity of purpose. Each member must have a clear understanding of the project's goals, their individual roles, and how their contributions align with the collective vision. This clarity is achieved through transparent and frequent discussions, where expectations are set and roles are defined. It is also crucial for leaders to foster an atmosphere of openness, where questions are encouraged and feedback is welcomed.
   
@@ -62,11 +62,11 @@
   Conflict resolution is an inevitable part of any team project, and effective communication is the key to navigating these challenges. Open and honest dialogue, empathy, and a willingness to compromise are essential in resolving disputes. It is also important to address conflicts promptly, as unresolved issues can fester and erode team morale.
   
   In conclusion, communication is the lifeblood of successful team projects. It is the means by which ideas are shared, goals are achieved, and relationships are built. By fostering a culture of clear, active, and empathetic communication, teams can overcome obstacles, innovate, and achieve remarkable results. The art of communication is not just a skill; it is the very fabric that binds a team together in pursuit of a common goal.</div>
-<div class="tab-content" id="tabContent1">Content for Tab 2</div>
-<div class="tab-content" id="tabContent2">Content for Tab 3</div>
+<div class="tab-content" id="Info">Content for Tab 2</div>
+<div class="tab-content" id="Status">Content for Tab 3</div>
 
 <script>
-  function showTabContent(index) {
+  function showTabContent(el) {
     var tabs = document.querySelectorAll('.tab');
     var tabContents = document.querySelectorAll('.tab-content');
     
@@ -79,12 +79,9 @@
     });
 
     // Set the active tab and content
-    tabs[index].classList.add('active');
-    document.getElementById('tabContent' + index).classList.add('active');
+    el.classList.add('active');
+    document.querySelector("#"+el.innerText).classList.add('active');
   }
-
-  // Set the default active tab
-  showTabContent(0);
 </script>
 
 </body>
