@@ -11,13 +11,6 @@
   };
   
   /**
-   * Returns true if given value is neither "undefined" nor null
-   */
-  var isSet = function (value) {
-    return !(value === undefined || value === null);
-  };
-
-  /**
    * The jsonform object whose methods will be exposed to the window object
    */
   var jsonform = { util: {} };
@@ -44,7 +37,8 @@
 {/* <form class="tab-content" id="Info">Content for Tab 2</form> */}
   jsonform.elementTypes = {
     'none': {template: ''},
-    'page': {template: (node) => `<form class="pure-form pure-form-aligned tab-content" id="${node.key}">${node.children_html}</form>`},
+    'page': {template: (node) => `<form class="pure-form pure-form-aligned">${node.children_html}</form>`},
+    'tab': {template: (node) => `<form class="pure-form pure-form-aligned tab-content ${node.form_index==0?"active":""}" id="${node.key}">${node.children_html}</form>`},
     'text': {template: (node) => `<div class="pure-control-group"><label>${node.title}</label></div>`},
     'input': inputFieldTemplate('text'),
     'password': inputFieldTemplate('password'),
@@ -88,129 +82,6 @@
       'template': '<input type="hidden" id="<%= id %>" name="<%= node.key %>" value="<%= escape(value) %>" />'
     }
   };
-
-  /**
-   * Returns the initial value that a field identified by its key
-   * should take.
-   *
-   * The "initial" value is defined as:
-   * 1. the previously submitted value if already submitted
-   * 2. the default value defined in the layout of the form
-   * 3. the default value defined in the schema
-   *
-   * The "value" returned is intended for rendering purpose,
-   * meaning that, for fields that define a titleMap property,
-   * the function returns the label, and not the intrinsic value.
-   *
-   * The function handles values that contains template strings,
-   * e.g. {{values.foo[].bar}} or {{idx}}.
-   *
-   * When the form is a string, the function truncates the resulting string
-   * to meet a potential "maxLength" constraint defined in the schema, using
-   * "..." to mark the truncation. Note it does not validate the resulting
-   * string against other constraints (e.g. minLength, pattern) as it would
-   * be hard to come up with an automated course of action to "fix" the value.
-   *
-   * @function
-   * @param {Object} formObject The JSON Form object
-   * @param {String} key The generic key path (e.g. foo[].bar.baz[])
-   * @param {Array(Number)} arrayPath The array path that identifies
-   *  the unique value in the submitted form (e.g. [1, 3])
-   * @param {Object} tpldata Template data object
-   * @param {Boolean} usePreviousValues true to use previously submitted values
-   *  if defined.
-   */
-  var getInitialValue = function (formObject, key, arrayPath, tpldata, usePreviousValues) {
-    var value = null;
-
-    // Complete template data for template function
-    tpldata = tpldata || {};
-    tpldata.idx = tpldata.idx ||
-      (arrayPath ? arrayPath[arrayPath.length - 1] : 1);
-    tpldata.value = isSet(tpldata.value) ? tpldata.value : '';
-    tpldata.getValue = tpldata.getValue || function (key) {
-      return getInitialValue(formObject, key, arrayPath, tpldata, usePreviousValues);
-    };
-
-    // Helper function that returns the form element that explicitly
-    // references the given key in the schema.
-    var getFormElement = function (elements, key) {
-      var formElement = null;
-      if (!elements || !elements.length) return null;
-      elements.forEach(elt=>{
-        if (formElement) return;
-        if (elt === key) {
-          formElement = { key: elt };
-          return;
-        }
-        if (typeof (elt) === 'string') return;
-        if (elt.key === key) {
-          formElement = elt;
-        }
-        else if (elt.items) {
-          formElement = getFormElement(elt.items, key);
-        }
-      });
-      return formElement;
-    };
-    var formElement = getFormElement(formObject.form || [], key);
-    var schemaElement = getSchemaKey(formObject.schema, key);
-
-    if (usePreviousValues && formObject.value) {
-      // If values were previously submitted, use them directly if defined
-      value = jsonform.util.getObjKey(formObject.value, applyArrayPath(key, arrayPath));
-    }
-    if (!isSet(value)) {
-      if (formElement && (typeof formElement['value'] !== 'undefined')) {
-        // Extract the definition of the form field associated with
-        // the key as it may override the schema's default value
-        // (note a "null" value overrides a schema default value as well)
-        value = formElement['value'];
-      }
-      else if (schemaElement) {
-        // Simply extract the default value from the schema
-        if (isSet(schemaElement['default'])) {
-          value = schemaElement['default'];
-        }
-      }
-      if (value && value.indexOf('{{values.') !== -1) {
-        // This label wants to use the value of another input field.
-        // Convert that construct into {{getValue(key)}} for
-        // Underscore to call the appropriate function of formData
-        // when template gets called (note calling a function is not
-        // exactly Mustache-friendly but is supported by Underscore).
-        value = value.replace(
-          /\{\{values\.([^\}]+)\}\}/g,
-          '{{getValue("$1")}}');
-      }
-      // if (value) {
-      //   value = tmpl(value, valueTemplateSettings)(tpldata);
-      // }
-    }
-
-    // TODO: handle on the formElement.options, because user can setup it too.
-    // Apply titleMap if needed
-    // if (isSet(value) && formElement && hasOwnProperty(formElement.titleMap, value)) {
-    //   value = tmpl(formElement.titleMap[value], valueTemplateSettings)(tpldata);
-    // }
-
-    // Check maximum length of a string
-    if (value && typeof (value) === 'string' &&
-      schemaElement && schemaElement.maxLength) {
-      if (value.length > schemaElement.maxLength) {
-        // Truncate value to maximum length, adding continuation dots
-        value = value.substr(0, schemaElement.maxLength - 1) + '…';
-      }
-    }
-
-    if (!isSet(value)) {
-      return null;
-    }
-    else {
-      return value;
-    }
-  };
-
 
   /**
    * Represents a node in the form.
@@ -327,267 +198,11 @@
     return node;
   };
 
-
-  /**
-   * Returns true if the subtree that starts at the current node
-   * has some non empty value attached to it
-   */
-  formNode.prototype.hasNonDefaultValue = function () {
-
-    // hidden elements don't count because they could make the wrong selectfieldset element active
-    if (this.formElement && this.formElement.type == "hidden") {
-      return false;
-    }
-
-    if (this.value && !this.defaultValue) {
-      return true;
-    }
-    var child = this.children.find(child => {
-      return child.hasNonDefaultValue();
-    });
-    return !!child;
-  };
-
   formNode.prototype.appendChild = function (node) {
     node.parentNode = this;
     node.childPos = this.children.length;
     this.children.push(node);
     return node;
-  };
-
-
-  /**
-   * Removes the last child of the node.
-   *
-   * @function
-   */
-  formNode.prototype.removeChild = function () {
-    var child = this.children[this.children.length - 1];
-    if (!child) return;
-
-    // Remove the child from the DOM
-    $(child.el).remove();
-
-    // Remove the child from the array
-    return this.children.pop();
-  };
-
-
-  /**
-   * Moves the user entered values set in the current node's subtree to the
-   * given node's subtree.
-   *
-   * The target node must follow the same structure as the current node
-   * (typically, they should have been generated from the same node template)
-   *
-   * The current node MUST be rendered in the DOM.
-   *
-   * TODO: when current node is not in the DOM, extract values from formNode.value
-   * properties, so that the function be available even when current node is not
-   * in the DOM.
-   *
-   * Moving values around allows to insert/remove array items at arbitrary
-   * positions.
-   *
-   * @function
-   * @param {formNode} node Target node.
-   */
-  formNode.prototype.moveValuesTo = function (node) {
-    var values = this.getFormValues(node.arrayPath);
-    node.resetValues();
-    node.computeInitialValues(values, true);
-  };
-
-
-  /**
-   * Switches nodes user entered values.
-   *
-   * The target node must follow the same structure as the current node
-   * (typically, they should have been generated from the same node template)
-   *
-   * Both nodes MUST be rendered in the DOM.
-   *
-   * TODO: update getFormValues to work even if node is not rendered, using
-   * formNode's "value" property.
-   *
-   * @function
-   * @param {formNode} node Target node
-   */
-  formNode.prototype.switchValuesWith = function (node) {
-    var values = this.getFormValues(node.arrayPath);
-    var nodeValues = node.getFormValues(this.arrayPath);
-    node.resetValues();
-    node.computeInitialValues(values, true);
-    this.resetValues();
-    this.computeInitialValues(nodeValues, true);
-  };
-
-
-  /**
-   * Resets all DOM values in the node's subtree.
-   *
-   * This operation also drops all array item nodes.
-   * Note values are not reset to their default values, they are rather removed!
-   *
-   * @function
-   */
-  formNode.prototype.resetValues = function () {
-    var params = null;
-    var idx = 0;
-
-    // Reset value
-    this.value = null;
-
-    // Propagate the array path from the parent node
-    // (adding the position of the child for nodes that are direct
-    // children of array-like nodes)
-    if (this.parentNode) {
-      this.arrayPath = clone(this.parentNode.arrayPath);
-      if (this.parentNode.view && this.parentNode.view.array) {
-        this.arrayPath.push(this.childPos);
-      }
-    }
-    else {
-      this.arrayPath = [];
-    }
-
-    if (this.view) {
-      // Simple input field, extract the value from the origin,
-      // set the target value and reset the origin value
-      params = $(':input', this.el).serializeArray();
-      params.forEach(param => {
-        // TODO: check this, there may exist corner cases with this approach
-        // (with multiple checkboxes for instance)
-        $('[name="' + escapeSelector(param.key) + '"]', $(this.el)).val('');
-      }, this);
-    }
-    else if (this.view && this.view.array) {
-      // The current node is an array, drop all children
-      while (this.children.length > 0) {
-        this.removeChild();
-      }
-    }
-
-    // Recurse down the tree
-    this.children.forEach(child => {
-      child.resetValues();
-    });
-  };
-
-
-  /**
-   * Sets the child template node for the current node.
-   *
-   * The child template node is used to create additional children
-   * in an array-like form element. The template is never rendered.
-   *
-   * @function
-   * @param {formNode} node The child template node to set
-   */
-  formNode.prototype.setChildTemplate = function (node) {
-    this.childTemplate = node;
-    node.parentNode = this;
-  };
-
-  formNode.prototype.getFormValues = function (updateArrayPath) {
-    // The values object that will be returned
-    var values = {};
-
-    if (!this.el) {
-      throw new Error('formNode.getFormValues can only be called on nodes that are associated with a DOM element in the tree');
-    }
-
-    // Form fields values
-    var formArray = $(':input', this.el).serializeArray();
-
-    // Set values to false for unset checkboxes and radio buttons
-    // because serializeArray() ignores them
-    formArray = formArray.concat(
-      $(':input[type=checkbox]:not(:disabled):not(:checked)', this.el).map(function () {
-        return { "name": this.key, "value": this.checked }
-      }).get()
-    );
-
-    if (updateArrayPath) {
-      formArray.forEach(param => {
-        param.key = applyArrayPath(param.key, updateArrayPath);
-      });
-    }
-
-    // The underlying data schema
-    var formSchema = this.ownerTree.formDesc.schema;
-
-    for (var i = 0; i < formArray.length; i++) {
-      // Retrieve the key definition from the data schema
-      var name = formArray[i].key;
-      var eltSchema = getSchemaKey(formSchema, name);
-      var arrayMatch = null;
-      var cval = null;
-
-      // Skip the input field if it's not part of the schema
-      if (!eltSchema) continue;
-
-      // Handle multiple checkboxes separately as the idea is to generate
-      // an array that contains the list of enumeration items that the user
-      // selected.
-      if (eltSchema._jsonform_checkboxes_as_array) {
-        arrayMatch = name.match(/\[([0-9]*)\]$/);
-        if (arrayMatch) {
-          name = name.replace(/\[([0-9]*)\]$/, '');
-          cval = jsonform.util.getObjKey(values, name) || [];
-          if (formArray[i].value === '1') {
-            // Value selected, push the corresponding enumeration item
-            // to the data result
-            cval.push(eltSchema['enum'][parseInt(arrayMatch[1], 10)]);
-          }
-          jsonform.util.setObjKey(values, name, cval);
-          continue;
-        }
-      }
-
-      // Type casting
-      if (eltSchema.type === 'boolean') {
-        if (formArray[i].value === '0') {
-          formArray[i].value = false;
-        } else {
-          formArray[i].value = !!formArray[i].value;
-        }
-      }
-      if ((eltSchema.type === 'number') ||
-        (eltSchema.type === 'integer')) {
-        if (typeof (formArray[i].value) === 'string') {
-          if (!formArray[i].value.length) {
-            formArray[i].value = null;
-          } else if (!isNaN(Number(formArray[i].value))) {
-            formArray[i].value = Number(formArray[i].value);
-          }
-        }
-      }
-      if ((eltSchema.type === 'string') &&
-        (formArray[i].value === '') &&
-        !eltSchema._jsonform_allowEmpty) {
-        formArray[i].value = null;
-      }
-      if ((eltSchema.type === 'object') &&
-        typeof (formArray[i].value) === 'string' &&
-        (formArray[i].value.substring(0, 1) === '{')) {
-        try {
-          formArray[i].value = JSON.parse(formArray[i].value);
-        } catch (e) {
-          formArray[i].value = {};
-        }
-      }
-      //TODO: is this due to a serialization bug?
-      if ((eltSchema.type === 'object') &&
-        (formArray[i].value === 'null' || formArray[i].value === '')) {
-        formArray[i].value = null;
-      }
-
-      if (formArray[i].key && (formArray[i].value !== null)) {
-        jsonform.util.setObjKey(values, formArray[i].key, formArray[i].value);
-      }
-    }
-    return values;
   };
 
   formNode.prototype.render = function (el) {
@@ -681,13 +296,14 @@
    *
    * @function
    */
-  formTree.prototype.initialize = function (key, schema) {
+  formTree.prototype.initialize = function (key, form_index, schema) {
     formDesc = schema || {};
 
     // Keep a pointer to the initial JSONForm
     // (note clone returns a shallow copy, only first-level is cloned)
     this.formDesc = clone(schema);
     this.root = this.traverseSchema(key, this.formDesc);
+    this.root.form_index = form_index;
   };
 
 
@@ -820,18 +436,11 @@
     return parseElement(this.formDesc.schema);
   };
 
-  jsonform.getFormValue = function (formelt) {
-    var form = $(formelt).data('jsonform-tree');
-    if (!form) return null;
-    return form.root.getFormValues();
-  };
-
-
-  var jsonForm = function (el, key, schema, config) {
+  var jsonForm = function (el, key, form_index, schema, config) {
     // options.submitEvent = 'submit';
 
     var form = new formTree();
-    form.initialize(key, schema);
+    form.initialize(key, form_index, schema);
     form.render(el);
 
     // Keep a direct pointer to the JSON schema for form submission purpose
@@ -858,7 +467,7 @@
   var jsonForms = function (el, schema, config) {
     /* only one tab, do not display any tabs */
     if (schema["j-component"] == "page") {
-      jsonForm(el, schema, config);
+      jsonForm(el, "root", 0, schema, config);
     } else if (schema["j-component"] == "tabs") {
       html = `<div class="tabs">`;
       Object.keys(schema.properties).forEach((key, index)=>{
@@ -866,23 +475,12 @@
       });
       html += `</div>`;
       el.innerHTML = html;
-      Object.keys(schema.properties).forEach((key)=>{
-        jsonForm(el, key, schema.properties[key], config);
+      Object.keys(schema.properties).forEach((key, index)=>{
+        jsonForm(el, key, index, schema.properties[key], config);
       });
     } else {
-      throw new Error('jsonForms schema root component must be root or tabs');
+      throw new Error('jsonForms schema root component must be page or tabs');
     }
-
-    // Object.keys(forms).forEach((key, index)=>{
-    //   this.append(`<form style="width:360px;" id="${key}" class="content"></form>`);
-    //   $('.pure-menu-list').append(`<li class="pure-menu-item"><a href="#${key}" class="pure-menu-link" onclick="showContent(\'${key}\', this)">${key}</a></li>`);
-    //   $(`#${key}`).jsonForm(key, {schema: forms[key]});
-    // });
-
-    // let firstKey = Object.keys(forms)[0];
-    // if (firstKey) {
-    //   showContent(firstKey, null);
-    // }
   };
   
   window.jsonForms = jsonForms;
