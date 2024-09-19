@@ -56,7 +56,8 @@ To provide embedded engineers with a solution that is tidy, fast, simple, and ro
 - 0.4.00 support materia style.
 - 0.5.00 support schema/client/server side verify.
 - 0.6.00 full test, full ci
-  
+- 0.7.00 debuggable by map file, gzipped to reduce size
+
 ## Restriction
 - consider the key length in embeded system is no greater than 16 generally, jform set the maximun key size to  16
 - to simplify the json syntax,  Represent different forms using JSON array. for each key/value pair in json, if the value is an object, it is a control, if the value is an array, it is a tab.

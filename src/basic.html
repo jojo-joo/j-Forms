@@ -6,12 +6,12 @@
 </style>
 </head>
 <body>
-  <form style="width:360px;" ></form>
+  <div class="root" style="width:360px;" ></div>
   <script type="text/javascript" src="jform.js"></script>
   <script type="text/javascript">
-    jsonForm(document.querySelector("form"), {
+    jsonForms(document.querySelector(".root"), {
       "form": {
-      },
+      }, 
       "schema": {
         "type": "object",
         "j-component": "root",
